@@ -8,6 +8,10 @@ Class {
 }
 
 { #category : #initialization }
+PoCElement >> drawOnSpartaCanvas: aCanvas [
+]
+
+{ #category : #initialization }
 PoCElement >> initialize [
 	super initialize.
 	

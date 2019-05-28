@@ -1,3 +1,8 @@
+"
+This is a simple game meant to test the live prototyping capabilities of Pharo. 
+
+There is a single character, a square. The square can move discretely in steps, in size equal to the length of the square. 
+"
 Class {
 	#name : #PoCGame,
 	#superclass : #Object,
@@ -32,7 +37,7 @@ PoCGame >> initialize [
 	model := PoCModel new.
 	state := PoCState new.
 	window := BlSpace new 
-		extent: 800@800;
+		extent: (self resolution);
 		title: 'PoC'.
 	
 	window root addEventHandler: (PoCEventListener new 
@@ -51,6 +56,11 @@ PoCGame >> initialize [
 { #category : #accessing }
 PoCGame >> model [ 
 	^ model
+]
+
+{ #category : #'as yet unclassified' }
+PoCGame >> resolution [
+	^ 640@480
 ]
 
 { #category : #accessing }
