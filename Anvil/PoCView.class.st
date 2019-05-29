@@ -3,7 +3,8 @@ Class {
 	#superclass : #BlElement,
 	#instVars : [
 		'state',
-		'damaged'
+		'damaged',
+		'element'
 	],
 	#category : #'Anvil-ProofOfConcept'
 }
@@ -12,20 +13,20 @@ Class {
 PoCView >> initialize [
 	super initialize.
 
-	self size: 800 @ 800.
+	self size: PoCGame resolution.
 	
 	self background: Color lightGray.
+	element := PoCElement new size: 10@10; relocate: 11@11.
+	self addChild: (element).
 	
-	"self addChild: (PoCElement new relocate: (1 * 21) @ (1 * 21))."
-	
-	1 to: 31 do: [ :x |
+	"1 to: 31 do: [ :x |
 		1 to: 31 do: [ :y | 
 			|element |
 			element := PoCElement new.
 			element relocate: (x * 21) @ (y * 21).
 			self addChild: element.
 		] 
-	]
+	]"
 	"((31 * 31) timesCollect: [ :pos | PoCElement new position: pos ]) do: [ :element |
 		]"
 ]
@@ -37,5 +38,5 @@ PoCView >> state: aState [
 
 { #category : #accessing }
 PoCView >> update [
-	 self invalidate
+	 element relocate: state location.
 ]

@@ -14,10 +14,35 @@ Class {
 	#category : #'Anvil-ProofOfConcept'
 }
 
+{ #category : #'as yet unclassified' }
+PoCGame class >> resolution [
+	^ 768@432
+]
+
 { #category : #running }
 PoCGame class >> run [ 
-	<script: 'self run'>
-	^ self new start
+	<script>
+	| model state window |
+	model := PoCModel new.
+state := PoCState new.
+window := PoCWindow new 
+	extent: 768@432;
+	title: 'PoC'.
+
+window state: state.
+
+window root addEventHandler: (PoCEventListener new 
+											model: model).
+
+window root addChild: (PoCView new state: state).
+		
+	
+model state: state.
+	
+model announcer when: PoCStateChangedAnnouncement send: #stateChanged to: window.
+	
+window show.
+
 ]
 
 { #category : #accessing }
@@ -37,7 +62,7 @@ PoCGame >> initialize [
 	model := PoCModel new.
 	state := PoCState new.
 	window := BlSpace new 
-		extent: (self resolution);
+		extent: (self class resolution);
 		title: 'PoC'.
 	
 	window root addEventHandler: (PoCEventListener new 
@@ -56,11 +81,6 @@ PoCGame >> initialize [
 { #category : #accessing }
 PoCGame >> model [ 
 	^ model
-]
-
-{ #category : #'as yet unclassified' }
-PoCGame >> resolution [
-	^ 640@480
 ]
 
 { #category : #accessing }

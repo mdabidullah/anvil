@@ -9,6 +9,7 @@ Class {
 
 { #category : #initialization }
 PoCWindow >> initialize [
+	super initialize.
 	view := PoCView new.
 ]
 

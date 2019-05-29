@@ -15,21 +15,40 @@ PoCModel >> announcer [
 
 { #category : #initialization }
 PoCModel >> event: aEvent [
-	aEvent == #left ifTrue: [ self moveLeft ].
-	aEvent == #right ifTrue: [ self moveRight ].
-	aEvent == #up ifTrue: [ self moveUp ].
-	aEvent == #down ifTrue: [ self moveDown ].
+	self halt.
+	aEvent == #Left ifTrue: [ self moveLeft ].
+	aEvent == #Right ifTrue: [ self moveRight ].
+	aEvent == #Up ifTrue: [ self moveUp ].
+	aEvent == #Down ifTrue: [ self moveDown ].
 ]
 
 { #category : #initialization }
 PoCModel >> initialize [ 
-	announcer := Announcer new
+	announcer := Announcer new                
+]
+
+{ #category : #initialization }
+PoCModel >> moveDown [
+	state location: (state location) + (0@10).
+	self stateChanged.
 ]
 
 { #category : #initialization }
 PoCModel >> moveLeft [ 
-	state location: (state location) + -50@0.
-	state updated.
+	state location: (state location) + (-10@0).
+	self stateChanged.
+]
+
+{ #category : #initialization }
+PoCModel >> moveRight [ 
+	state location: (state location) + (10@0).
+	self stateChanged.
+]
+
+{ #category : #initialization }
+PoCModel >> moveUp [
+	state location: (state location) + (0@(-10)).
+	self stateChanged.
 ]
 
 { #category : #initialization }
