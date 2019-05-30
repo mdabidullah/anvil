@@ -24,6 +24,9 @@ PoCView >> initialize [
 	self size: PoCGame resolution.
 	
 	self background: Color lightGray.
+	
+	self enqueueTask: (BlRepeatedTaskAction new delay: 16 milliSeconds; action: [ self step ]).
+	
 	"element := PoCElement new size: 10@10; relocate: 111@11.
 	self addChild: (element)."
 	
@@ -42,6 +45,10 @@ PoCView >> initialize [
 { #category : #accessing }
 PoCView >> state: aState [
 	state := aState.
+]
+
+{ #category : #initialization }
+PoCView >> step [
 ]
 
 { #category : #accessing }

@@ -2,6 +2,10 @@
 This is a simple game meant to test the live prototyping capabilities of Pharo. 
 
 There is a single character, a square. The square can move discretely in steps, in size equal to the length of the square. 
+
+DONE
+
+Now create a drawing loop so that the canvas is redrawn whenever necessary.
 "
 Class {
 	#name : #PoCGame,

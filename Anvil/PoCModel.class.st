@@ -28,25 +28,25 @@ PoCModel >> initialize [
 
 { #category : #initialization }
 PoCModel >> moveDown [
-	state location: (state location) + (0@10).
+	state location: (state location) + (0@(-10)).
 	self stateChanged.
 ]
 
 { #category : #initialization }
 PoCModel >> moveLeft [ 
-	state location: (state location) + (-10@0).
-	self stateChanged.
-]
-
-{ #category : #initialization }
-PoCModel >> moveRight [ 
 	state location: (state location) + (10@0).
 	self stateChanged.
 ]
 
 { #category : #initialization }
+PoCModel >> moveRight [ 
+	state location: (state location) + (-10@0).
+	self stateChanged.
+]
+
+{ #category : #initialization }
 PoCModel >> moveUp [
-	state location: (state location) + (0@(-10)).
+	state location: (state location) + (0@(10)).
 	self stateChanged.
 ]
 
