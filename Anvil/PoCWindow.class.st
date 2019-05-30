@@ -10,7 +10,6 @@ Class {
 { #category : #initialization }
 PoCWindow >> initialize [
 	super initialize.
-	view := PoCView new.
 ]
 
 { #category : #initialization }
@@ -21,4 +20,10 @@ PoCWindow >> state: aState [
 { #category : #initialization }
 PoCWindow >> stateChanged [
 	view update.
+]
+
+{ #category : #initialization }
+PoCWindow >> view: aBlElement [
+	view := aBlElement.
+	self addChild: view.
 ]

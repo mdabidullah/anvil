@@ -3,11 +3,19 @@ Class {
 	#superclass : #BlElement,
 	#instVars : [
 		'state',
-		'damaged',
 		'element'
 	],
 	#category : #'Anvil-ProofOfConcept'
 }
+
+{ #category : #drawing }
+PoCView >> drawOnSpartaCanvas: aCanvas [
+	
+	aCanvas fill
+		path: (aCanvas shape roundedRectangle: (Rectangle origin: (state location) extent: 10@10) radii:(BlCornerRadii radius: 4) );
+		paint: (Color red);
+		draw.
+]
 
 { #category : #initialization }
 PoCView >> initialize [
@@ -16,8 +24,8 @@ PoCView >> initialize [
 	self size: PoCGame resolution.
 	
 	self background: Color lightGray.
-	element := PoCElement new size: 10@10; relocate: 11@11.
-	self addChild: (element).
+	"element := PoCElement new size: 10@10; relocate: 111@11.
+	self addChild: (element)."
 	
 	"1 to: 31 do: [ :x |
 		1 to: 31 do: [ :y | 
@@ -38,5 +46,5 @@ PoCView >> state: aState [
 
 { #category : #accessing }
 PoCView >> update [
-	 element relocate: state location.
+	self invalidate.
 ]

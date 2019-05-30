@@ -15,7 +15,6 @@ PoCModel >> announcer [
 
 { #category : #initialization }
 PoCModel >> event: aEvent [
-	self halt.
 	aEvent == #Left ifTrue: [ self moveLeft ].
 	aEvent == #Right ifTrue: [ self moveRight ].
 	aEvent == #Up ifTrue: [ self moveUp ].

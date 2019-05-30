@@ -15,7 +15,7 @@ PoCState >> announcer [
 
 { #category : #initialization }
 PoCState >> initialize [ 
-	location := 11@11.
+	location := 51@61.
 	announcer := Announcer new
 ]
 

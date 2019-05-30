@@ -22,27 +22,25 @@ PoCGame class >> resolution [
 { #category : #running }
 PoCGame class >> run [ 
 	<script>
-	| model state window |
+	| model state window view|
 	model := PoCModel new.
 state := PoCState new.
+view := PoCView new state: state.
 window := PoCWindow new 
 	extent: 768@432;
 	title: 'PoC'.
 
-window state: state.
+window view: view.
 
 window root addEventHandler: (PoCEventListener new 
 											model: model).
 
-window root addChild: (PoCView new state: state).
-		
 	
 model state: state.
 	
 model announcer when: PoCStateChangedAnnouncement send: #stateChanged to: window.
 	
 window show.
-
 ]
 
 { #category : #accessing }
