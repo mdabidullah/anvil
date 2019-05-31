@@ -12,7 +12,7 @@ Class {
 PoCView >> drawOnSpartaCanvas: aCanvas [
 	
 	aCanvas fill
-		path: (aCanvas shape roundedRectangle: (Rectangle origin: (state location) extent: 10@10) radii:(BlCornerRadii radius: 4) );
+		path: (aCanvas shape roundedRectangle: (Rectangle origin: (state at: #location) extent: 10@10) radii:(BlCornerRadii radius: 4) );
 		paint: (Color red);
 		draw.
 ]

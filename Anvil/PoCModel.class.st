@@ -23,36 +23,37 @@ PoCModel >> event: aEvent [
 
 { #category : #initialization }
 PoCModel >> initialize [ 
-	announcer := Announcer new                
+	announcer := Announcer new.           
 ]
 
 { #category : #initialization }
 PoCModel >> moveDown [
-	state location: (state location) + (0@(-10)).
+	state at: #location put: (state at: #location) + (0@(-10)).
 	self stateChanged.
 ]
 
 { #category : #initialization }
 PoCModel >> moveLeft [ 
-	state location: (state location) + (10@0).
+	state at: #location put: (state at: #location) + (10@0).
 	self stateChanged.
 ]
 
 { #category : #initialization }
 PoCModel >> moveRight [ 
-	state location: (state location) + (-10@0).
+	state at: #location put: (state at: #location) + (-10@0).
 	self stateChanged.
 ]
 
 { #category : #initialization }
 PoCModel >> moveUp [
-	state location: (state location) + (0@(10)).
+	state at: #location put: (state at: #location) + (0@(10)).
 	self stateChanged.
 ]
 
 { #category : #initialization }
 PoCModel >> state: aState [
-	state := aState
+	state := aState.
+	state at: #location put: (11@11). 
 ]
 
 { #category : #initialization }

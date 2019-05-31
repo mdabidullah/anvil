@@ -2,7 +2,7 @@ Class {
 	#name : #PoCState,
 	#superclass : #Object,
 	#instVars : [
-		'location',
+		'values',
 		'announcer'
 	],
 	#category : #'Anvil-ProofOfConcept'
@@ -14,17 +14,23 @@ PoCState >> announcer [
 ]
 
 { #category : #initialization }
+PoCState >> at: aKey [ 
+	^ values at: aKey.
+]
+
+{ #category : #initialization }
+PoCState >> at: aKey put: aValue [
+	values add: (aKey -> aValue).
+	self stateChanged.
+]
+
+{ #category : #initialization }
 PoCState >> initialize [ 
-	location := 51@61.
+	values := Dictionary new.
 	announcer := Announcer new
 ]
 
 { #category : #initialization }
-PoCState >> location [
-	^ location
-]
-
-{ #category : #initialization }
-PoCState >> location: aLocation [
-	location := aLocation
+PoCState >> stateChanged [
+	announcer announce: PoCStateChangedAnnouncement new.
 ]

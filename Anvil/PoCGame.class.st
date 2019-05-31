@@ -15,6 +15,7 @@ Class {
 	#name : #PoCGame,
 	#superclass : #Object,
 	#instVars : [
+		'window',
 		'view',
 		'state',
 		'model'
@@ -52,35 +53,24 @@ window show.
 ]
 
 { #category : #accessing }
-PoCGame >> event: aEvent [
-	((Dictionary new
-		at: (Character arrowDown asInteger) put: [ model event: #Down ];
-		at: (Character arrowLeft asInteger) put: [ model event: #Left ];
-		at: (Character arrowRight asInteger) put: [ model event: #Right ];
-		at: (Character arrowUp asInteger) put: [ model event: #Up ];
-		at: (Character space asInteger) put: [ model event: #Space ];
-		at: (Character cr asInteger) put: [ model event: #Enter ];
-		yourself) at: (aEvent char asInteger)) value.
-]
-
-{ #category : #accessing }
 PoCGame >> initialize [
 	model := PoCModel new.
 	state := PoCState new.
-	view := PoCWindow new 
+	window := PoCWindow new 
 		extent: (self class resolution);
 		title: 'PoC'.
+	view := PoCView new state: state.
 	
-	view root addChild: (PoCView new state: state).
+	window root addChild: view.
 	
-	view root addEventHandler: (PoCEventListener new 
-												game: self).
+	window root addEventHandler: (PoCEventListener new 
+												model: model).
 	
 	model state: state.
 	
-	state announcer when: PoCStateChangedAnnouncement send: #stateChanged to: view.
+	state announcer when: PoCStateChangedAnnouncement send: #stateChanged to: window.
 	
-	view show.
+	window show.
 ]
 
 { #category : #accessing }
@@ -100,4 +90,9 @@ PoCGame >> state [
 { #category : #accessing }
 PoCGame >> view [ 
 	^ view
+]
+
+{ #category : #accessing }
+PoCGame >> window [
+	^ window.
 ]
