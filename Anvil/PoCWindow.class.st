@@ -8,6 +8,12 @@ Class {
 }
 
 { #category : #initialization }
+PoCWindow >> addChild: aBlElement [
+	super addChild: aBlElement.
+	view := aBlElement.
+]
+
+{ #category : #initialization }
 PoCWindow >> initialize [
 	super initialize.
 ]

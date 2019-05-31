@@ -15,19 +15,19 @@ SqModel >> checkForRing [
 SqModel >> checkForRings [
 ]
 
-{ #category : #accessing }
+{ #category : #shape }
 SqModel >> downDiagonal: aDirection [
 ]
 
-{ #category : #accessing }
+{ #category : #shape }
 SqModel >> drop [
 ]
 
-{ #category : #accessing }
+{ #category : #shape }
 SqModel >> enterDiagonal: aDirection [
 ]
 
-{ #category : #accessing }
+{ #category : #shape }
 SqModel >> exitDiagonal: aDirection [
 ]
 
@@ -63,11 +63,11 @@ SqModel >> quadrant: aQuadrant [
 SqModel >> removeRing [
 ]
 
-{ #category : #accessing }
+{ #category : #shape }
 SqModel >> rotateClockWise [
 ]
 
-{ #category : #accessing }
+{ #category : #shape }
 SqModel >> rotationPossible [
 
 ]

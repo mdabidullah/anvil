@@ -3,13 +3,12 @@ This is a simple game meant to test the live prototyping capabilities of Pharo.
 
 There is a single character, a square. The square can move discretely in steps, in size equal to the length of the square. DONE
 
-Now create a drawing loop so that the canvas is redrawn whenever necessary. This is whenever the state changes.
+Whenever state is changed the frame is redrawn. Whenever the user asks redraw the frame. DONE
 
 Also we need to be able to go back in time state wise. 
 
 Also need to be able to alter state.
 
-Join window and view to just view.
 "
 Class {
 	#name : #PoCGame,
@@ -61,7 +60,7 @@ PoCGame >> initialize [
 		title: 'PoC'.
 	view := PoCView new state: state.
 	
-	window root addChild: view.
+	window addChild: view.
 	
 	window root addEventHandler: (PoCEventListener new 
 												model: model).
@@ -70,7 +69,6 @@ PoCGame >> initialize [
 	
 	state announcer when: PoCStateChangedAnnouncement send: #stateChanged to: window.
 	
-	window show.
 ]
 
 { #category : #accessing }
@@ -80,11 +78,17 @@ PoCGame >> model [
 
 { #category : #accessing }
 PoCGame >> start [
+	window show.
 ]
 
 { #category : #accessing }
 PoCGame >> state [ 
 	^ state
+]
+
+{ #category : #accessing }
+PoCGame >> update [ 
+	view update.
 ]
 
 { #category : #accessing }
