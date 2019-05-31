@@ -1,17 +1,21 @@
 "
 This is a simple game meant to test the live prototyping capabilities of Pharo. 
 
-There is a single character, a square. The square can move discretely in steps, in size equal to the length of the square. 
+There is a single character, a square. The square can move discretely in steps, in size equal to the length of the square. DONE
 
-DONE
+Now create a drawing loop so that the canvas is redrawn whenever necessary. This is whenever the state changes.
 
-Now create a drawing loop so that the canvas is redrawn whenever necessary.
+Also we need to be able to go back in time state wise. 
+
+Also need to be able to alter state.
+
+Join window and view to just view.
 "
 Class {
 	#name : #PoCGame,
 	#superclass : #Object,
 	#instVars : [
-		'window',
+		'view',
 		'state',
 		'model'
 	],
@@ -63,21 +67,20 @@ PoCGame >> event: aEvent [
 PoCGame >> initialize [
 	model := PoCModel new.
 	state := PoCState new.
-	window := BlSpace new 
+	view := PoCWindow new 
 		extent: (self class resolution);
 		title: 'PoC'.
 	
-	window root addEventHandler: (PoCEventListener new 
-												game: self).
+	view root addChild: (PoCView new state: state).
 	
-	window root addChild: (PoCView new state: state).
-		
+	view root addEventHandler: (PoCEventListener new 
+												game: self).
 	
 	model state: state.
 	
-	model announcer when: PoCStateChangedAnnouncement send: #stateChanged to: window.
+	state announcer when: PoCStateChangedAnnouncement send: #stateChanged to: view.
 	
-	window show.
+	view show.
 ]
 
 { #category : #accessing }
@@ -95,6 +98,6 @@ PoCGame >> state [
 ]
 
 { #category : #accessing }
-PoCGame >> window [ 
-	^ window
+PoCGame >> view [ 
+	^ view
 ]
