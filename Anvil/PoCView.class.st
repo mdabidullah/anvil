@@ -1,3 +1,14 @@
+"
+PoCView does not have a drawing loop. A drawing loop could be created with: 
+
+	initialize
+	super initialize.
+	
+	self enqueueTask: (BlRepeatedTaskAction new delay: 16 milliSeconds; 
+															 action: [ self step ]).
+
+The function step would be responsible for calling `self invalidate`. `invalidate` should only be called when necessary for performance. A variable to keep track of whether a redraw is necessary could be created. 
+"
 Class {
 	#name : #PoCView,
 	#superclass : #BlElement,
@@ -45,10 +56,6 @@ PoCView >> initialize [
 { #category : #accessing }
 PoCView >> state: aState [
 	state := aState.
-]
-
-{ #category : #initialization }
-PoCView >> step [
 ]
 
 { #category : #accessing }

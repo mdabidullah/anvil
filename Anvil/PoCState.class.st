@@ -3,7 +3,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'values',
-		'announcer'
+		'announcer',
+		'stateHistory'
 	],
 	#category : #'Anvil-ProofOfConcept'
 }
@@ -27,7 +28,14 @@ PoCState >> at: aKey put: aValue [
 { #category : #initialization }
 PoCState >> initialize [ 
 	values := Dictionary new.
-	announcer := Announcer new
+	announcer := Announcer new.
+	stateHistory := OrderedCollection new.
+]
+
+{ #category : #initialization }
+PoCState >> saveState [
+	"save the current state to state history"
+	stateHistory add: self.
 ]
 
 { #category : #initialization }

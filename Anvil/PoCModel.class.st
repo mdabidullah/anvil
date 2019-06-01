@@ -2,16 +2,10 @@ Class {
 	#name : #PoCModel,
 	#superclass : #Object,
 	#instVars : [
-		'state',
-		'announcer'
+		'state'
 	],
 	#category : #'Anvil-ProofOfConcept'
 }
-
-{ #category : #initialization }
-PoCModel >> announcer [ 
-	^ announcer
-]
 
 { #category : #initialization }
 PoCModel >> event: aEvent [
@@ -22,8 +16,7 @@ PoCModel >> event: aEvent [
 ]
 
 { #category : #initialization }
-PoCModel >> initialize [ 
-	announcer := Announcer new.           
+PoCModel >> initialize [         
 ]
 
 { #category : #initialization }
@@ -54,9 +47,4 @@ PoCModel >> moveUp [
 PoCModel >> state: aState [
 	state := aState.
 	state at: #location put: (11@11). 
-]
-
-{ #category : #initialization }
-PoCModel >> stateChanged [
-	self announcer announce: PoCStateChangedAnnouncement new.
 ]

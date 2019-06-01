@@ -8,66 +8,109 @@ Class {
 }
 
 { #category : #accessing }
+SqModel class >> fallingDirection: aPoint [
+]
+
+{ #category : #accessing }
+SqModel class >> quadrant: aQuadrant [
+]
+
+{ #category : #ring }
 SqModel >> checkForRing [
 ]
 
-{ #category : #accessing }
+{ #category : #ring }
 SqModel >> checkForRings [
 ]
 
-{ #category : #shape }
+{ #category : #moving }
 SqModel >> downDiagonal: aDirection [
 ]
 
-{ #category : #shape }
+{ #category : #moving }
 SqModel >> drop [
 ]
 
-{ #category : #shape }
+{ #category : #'event handling' }
+SqModel >> dropDown [
+]
+
+{ #category : #moving }
 SqModel >> enterDiagonal: aDirection [
 ]
 
-{ #category : #shape }
+{ #category : #event }
+SqModel >> event: aEvent [
+	aEvent == #Left ifTrue: [ self moveLeft ].
+	aEvent == #Right ifTrue: [ self moveRight ].
+	aEvent == #Up ifTrue: [ self moveUp ].
+	aEvent == #Down ifTrue: [ self moveDown ].
+]
+
+{ #category : #moving }
 SqModel >> exitDiagonal: aDirection [
 ]
 
-{ #category : #accessing }
-SqModel >> fallingDirection [
+{ #category : #anvil }
+SqModel >> initialize [ 
 ]
 
-{ #category : #accessing }
+{ #category : #ring }
 SqModel >> manageCascade [
 ]
 
-{ #category : #accessing }
+{ #category : #moving }
 SqModel >> move: aDirection [
 ]
 
-{ #category : #accessing }
+{ #category : #'event handling' }
+SqModel >> moveDown [
+]
+
+{ #category : #moving }
 SqModel >> moveInDiagonal: aDirection [
 ]
 
-{ #category : #accessing }
+{ #category : #'event handling' }
+SqModel >> moveLeft [
+]
+
+{ #category : #moving }
 SqModel >> movePossible: aDirection [
 ]
 
-{ #category : #accessing }
+{ #category : #'event handling' }
+SqModel >> moveRight [
+]
+
+{ #category : #'event handling' }
+SqModel >> moveUp [
+]
+
+{ #category : #moving }
 SqModel >> moveValid: aDirection [
 ]
 
-{ #category : #accessing }
-SqModel >> quadrant: aQuadrant [
-]
-
-{ #category : #accessing }
+{ #category : #ring }
 SqModel >> removeRing [
 ]
 
-{ #category : #shape }
+{ #category : #'event handling' }
+SqModel >> rotate [
+]
+
+{ #category : #rotating }
 SqModel >> rotateClockWise [
 ]
 
-{ #category : #shape }
+{ #category : #rotating }
 SqModel >> rotationPossible [
 
+]
+
+{ #category : #anvil }
+SqModel >> state: aState [
+	state := aState.
+	self flag: 'initialize state'.
+	"state at: #key put: value". 
 ]
