@@ -10,23 +10,23 @@ Class {
 
 { #category : #drawing }
 SqView >> drawOnSpartaCanvas: aCanvas [
-	self halt.
 	"draw level"
-	"1 to: 31 do: [ :x |
-		1 to: 31 do: [ :y | 
-			|element |
-			element := PoCElement new.
-			element relocate: (x * 21) @ (y * 21).
-			self addChild: element.
-		] 
-	]"
 	
-	1 to: 2 do: [ :i |
+	1 to: 31 do: [ :x |
+		1 to: 31 do: [ :y | 
+			aCanvas fill
+				path: (aCanvas shape roundedRectangle: (Rectangle origin: ((x*11)@(y*11)) extent: 10@10)                                    radii:(BlCornerRadii radius: 2) );
+				paint: (Color veryVeryLightGray);
+				draw.
+		] 
+	].
+	
+	"1 to: (state at: #levelSize) do: [ :i |
 		
 		aCanvas fill
 		path: (aCanvas shape roundedRectangle: (Rectangle origin: ((i*10)@(i*10)) extent: 10@10) radii:(BlCornerRadii radius: 4) );
 		paint: (Color black);
-		draw. ]
+		draw. ]."
 	"draw placed cells"
 	
 	"draw current shape"
