@@ -23,13 +23,13 @@ SqGame >> initialize [
 		extent: (self class resolution);
 		title: 'PoC'.
 	view := SqView new state: state.
+	view model: model.
+	model state: state.
 	
 	window addChild: view.
 	
 	window root addEventHandler: (SqEventListener new 
 												model: model).
-	
-	model state: state.
 	
 	state announcer when: SqStateChangedAnnouncement send: #stateChanged to: window.
 	

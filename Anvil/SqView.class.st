@@ -3,7 +3,8 @@ Class {
 	#superclass : #BlElement,
 	#instVars : [
 		'state',
-		'view'
+		'view',
+		'model'
 	],
 	#category : #'Anvil-SquareSquare'
 }
@@ -57,7 +58,15 @@ SqView >> initialize [
 	
 	self size: PoCGame resolution.
 	
+	self enqueueTask: (BlRepeatedTaskAction new delay: 1 seconds; 
+															 action: [ self step ]).
+	
 	SystemAnnouncer uniqueInstance when: MethodModified do: [:methodModified | methodModified method selector == #drawOnSpartaCanvas: ifTrue: self update ].
+]
+
+{ #category : #initialization }
+SqView >> model: aModel [
+	model := aModel.
 ]
 
 { #category : #anvil }
@@ -68,6 +77,8 @@ SqView >> state: aState [
 { #category : #initialization }
 SqView >> step [
 	self flag: 'todo'.
+	"Transcript show: (Time now); cr.
+	model step."
 ]
 
 { #category : #initialization }

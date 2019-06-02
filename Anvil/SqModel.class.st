@@ -161,5 +161,18 @@ SqModel >> rotationPossible [
 SqModel >> state: aState [
 	state := aState.
 	self flag: 'initialize state'.
+	state at: #time put: 1.0.
 	state at: #levelSize put: 31. 
+]
+
+{ #category : #'stepping and presenter' }
+SqModel >> step [
+	| current |
+	current := state at: #time.
+	
+	current := current - 0.5.
+	
+	(current < 0 or: (current == 0))
+		ifTrue: [ Transcript show: 'Drop'; cr. state at: #time put: 1.0 ] 
+	   ifFalse: [ state at: #time put: current ].
 ]

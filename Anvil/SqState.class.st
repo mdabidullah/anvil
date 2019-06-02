@@ -1,4 +1,9 @@
 "
+#Time#
+______
+
+#time: a countdown until the shape must be dropped
+
 #Shape Related#
 _______________
 
