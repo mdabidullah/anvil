@@ -17,21 +17,21 @@ SqGame class >> resolution [
 
 { #category : #anvil }
 SqGame >> initialize [
-	model := PoCModel new.
-	state := PoCState new.
-	window := PoCWindow new 
+	model := SqModel new.
+	state := SqState new.
+	window := SqWindow new 
 		extent: (self class resolution);
 		title: 'PoC'.
-	view := PoCView new state: state.
+	view := SqView new state: state.
 	
 	window addChild: view.
 	
-	window root addEventHandler: (PoCEventListener new 
+	window root addEventHandler: (SqEventListener new 
 												model: model).
 	
 	model state: state.
 	
-	state announcer when: PoCStateChangedAnnouncement send: #stateChanged to: window.
+	state announcer when: SqStateChangedAnnouncement send: #stateChanged to: window.
 	
 ]
 

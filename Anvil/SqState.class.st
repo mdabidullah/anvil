@@ -1,5 +1,26 @@
 "
-shapeLocations : an OrderedCollection containing Points 
+#Shape Related#
+_______________
+
+#shapeLocations : an OrderedCollection containing Points, each point represents the location of a cell which makes up the shape
+
+#shapeMatrix : a Matrix, the matrix representation of the shape 
+
+#shapeRotation
+
+#
+
+#Level Related#
+_______________
+
+#levelSize : a Number, 
+
+#level : an OrderedCollection containing Dictionarys:
+	#point: a Point, each point contains the location of a cell in the level that has an active cell. 
+	#
+
+#levelOrientation : a Number that keeps track of the orientation of the cell. 
+
 "
 Class {
 	#name : #SqState,

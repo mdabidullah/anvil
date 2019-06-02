@@ -27,9 +27,3 @@ PoCWindow >> state: aState [
 PoCWindow >> stateChanged [
 	view update.
 ]
-
-{ #category : #initialization }
-PoCWindow >> view: aBlElement [
-	view := aBlElement.
-	self addChild: view.
-]

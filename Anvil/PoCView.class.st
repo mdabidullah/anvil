@@ -36,7 +36,7 @@ PoCView >> initialize [
 	
 	self background: Color lightGray.
 	
-	self enqueueTask: (BlRepeatedTaskAction new delay: 16 milliSeconds; action: [ self step ]).
+	"self enqueueTask: (BlRepeatedTaskAction new delay: 16 milliSeconds; action: [ self step ])."
 	
 	"element := PoCElement new size: 10@10; relocate: 111@11.
 	self addChild: (element)."

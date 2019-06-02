@@ -112,5 +112,5 @@ SqModel >> rotationPossible [
 SqModel >> state: aState [
 	state := aState.
 	self flag: 'initialize state'.
-	"state at: #key put: value". 
+	state at: #levelSize put: 31. 
 ]
