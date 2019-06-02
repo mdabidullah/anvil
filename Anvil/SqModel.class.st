@@ -7,6 +7,55 @@ Class {
 	#category : #'Anvil-SquareSquare'
 }
 
+{ #category : #'shape matrices' }
+SqModel class >> IMatrix [
+	^ Array2D new rows: 4 columns: 4 contents: #( 0 0 0 0
+														 	   1 1 1 1
+														 	   0 0 0 0
+															   0 0 0 0 )
+]
+
+{ #category : #'shape matrices' }
+SqModel class >> JMatrix [
+	^ Array2D new rows: 3 columns: 3 contents: #( 1 0 0 
+															   1 1 1 
+															   0 0 0 )
+]
+
+{ #category : #'shape matrices' }
+SqModel class >> LMatrix [
+	^ Array2D new rows: 3 columns: 3 contents: #( 0 0 1 
+															   1 1 1 
+															   0 0 0 )
+]
+
+{ #category : #'shape matrices' }
+SqModel class >> OMatrix [
+	^ Array2D new rows: 2 columns: 2 contents: #( 1 1 
+															   1 1 )
+]
+
+{ #category : #'shape matrices' }
+SqModel class >> SMatrix [
+	^ Array2D new rows: 3 columns: 3 contents: #( 0 1 1 
+															   1 1 0 
+															   0 0 0 )
+]
+
+{ #category : #'shape matrices' }
+SqModel class >> TMatrix [
+	^ Array2D new rows: 3 columns: 3 contents: #( 0 1 0 
+															   1 1 1 
+															   0 0 0 )
+]
+
+{ #category : #'shape matrices' }
+SqModel class >> ZMatrix [
+	^ Array2D new rows: 3 columns: 3 contents: #( 1 1 0 
+															   0 1 1 
+															   0 0 0 )
+]
+
 { #category : #accessing }
 SqModel class >> fallingDirection: aPoint [
 ]
