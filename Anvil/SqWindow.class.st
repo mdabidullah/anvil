@@ -14,6 +14,12 @@ SqWindow >> addChild: aBlElement [
 ]
 
 { #category : #anvil }
+SqWindow >> close [
+	view unsubscribe.
+	super close.
+]
+
+{ #category : #anvil }
 SqWindow >> initialize [
 	super initialize.
 ]

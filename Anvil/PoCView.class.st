@@ -26,6 +26,8 @@ PoCView >> drawOnSpartaCanvas: aCanvas [
 		path: (aCanvas shape roundedRectangle: (Rectangle origin: (state at: #location) extent: 10@10) radii:(BlCornerRadii radius: 4) );
 		paint: (Color black);
 		draw.
+		
+	""
 ]
 
 { #category : #initialization }
@@ -56,6 +58,15 @@ PoCView >> initialize [
 { #category : #accessing }
 PoCView >> state: aState [
 	state := aState.
+]
+
+{ #category : #drawing }
+PoCView >> test [
+]
+
+{ #category : #drawing }
+PoCView >> test1 [
+	^ 5
 ]
 
 { #category : #accessing }
