@@ -11,6 +11,19 @@ Class {
 
 { #category : #anvil }
 SqView >> drawOnSpartaCanvas: aCanvas [
+	super drawOnSpartaCanvas: aCanvas.
+	"aCanvas transform
+		reset;
+		canvas: aCanvas."
+	
+	aCanvas transform
+		translateBy: 10@10;
+		push.
+	
+	"aCanvas transform
+		translateBy: 0@(-100);
+		push."
+	
 	"draw level"
 	
 	"draw back cells"
