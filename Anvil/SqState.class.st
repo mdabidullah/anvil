@@ -11,7 +11,7 @@ _______________
 
 #shapeMatrix : a Matrix, the matrix representation of the shape 
 
-#shapeRotation
+#shapeRotation : a Number, representing the current rotation of the shape. 
 
 #
 

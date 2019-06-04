@@ -63,6 +63,8 @@ SqView >> drawOnSpartaCanvas: aCanvas [
 	"draw placed cells"
 	
 	"draw current shape"
+	
+	aCanvas transform pop
 ]
 
 { #category : #initialization }
