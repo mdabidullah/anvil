@@ -21,10 +21,6 @@ Class {
 
 { #category : #drawing }
 PoCView >> drawOnSpartaCanvas: aCanvas [
-	aCanvas transform
-		translateBy: 100@100;
-		apply.
-		
 	aCanvas fill
 		path: (aCanvas shape roundedRectangle: (Rectangle origin: (state at: #location) extent: 10@10) radii:(BlCornerRadii radius: 4) );
 		paint: (Color black);

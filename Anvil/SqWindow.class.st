@@ -31,5 +31,6 @@ SqWindow >> state: aState [
 
 { #category : #anvil }
 SqWindow >> stateChanged [
+	Transcript show: 'Received announcement'.
 	view update.
 ]

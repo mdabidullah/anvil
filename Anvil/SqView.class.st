@@ -3,8 +3,7 @@ Class {
 	#superclass : #BlElement,
 	#instVars : [
 		'state',
-		'view',
-		'model'
+		'view'
 	],
 	#category : #'Anvil-SquareSquare'
 }
@@ -12,17 +11,10 @@ Class {
 { #category : #anvil }
 SqView >> drawOnSpartaCanvas: aCanvas [
 	super drawOnSpartaCanvas: aCanvas.
-	"aCanvas transform
-		reset;
-		canvas: aCanvas."
-	
+		
 	aCanvas transform
-		translateBy: 10@10;
+		translateBy: (state at: #offset);
 		push.
-	
-	"aCanvas transform
-		translateBy: 0@(-100);
-		push."
 	
 	"draw level"
 	
@@ -38,7 +30,7 @@ SqView >> drawOnSpartaCanvas: aCanvas [
 	1 to: (state at: #levelSize) do: [ :i | 
 		aCanvas fill
 			path: (aCanvas shape roundedRectangle: (Rectangle origin: ((i*11)@(i*11)) extent: 10@10)                                    radii:(BlCornerRadii radius: 2) );
-			paint: (Color veryLightGray);
+			paint: (Color lightGray);
 			draw.
 		aCanvas fill
 			path: (aCanvas shape roundedRectangle: (Rectangle origin: ((352-(i*11))@(i*11)) extent: 10@10)                                    radii:(BlCornerRadii radius: 2) );
@@ -77,11 +69,6 @@ SqView >> initialize [
 															 action: [ self step ]).
 	
 	SystemAnnouncer uniqueInstance when: MethodModified do: [:methodModified | methodModified method selector == #drawOnSpartaCanvas: ifTrue: self update ].
-]
-
-{ #category : #initialization }
-SqView >> model: aModel [
-	model := aModel.
 ]
 
 { #category : #anvil }

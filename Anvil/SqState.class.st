@@ -49,12 +49,14 @@ SqState >> at: aKey [
 
 { #category : #anvil }
 SqState >> at: aKey put: aValue [
+	Transcript show: 'Changing state '; cr.
 	values add: (aKey -> aValue).
 	self stateChanged.
 ]
 
 { #category : #anvil }
 SqState >> initialize [ 
+	self halt.
 	values := Dictionary new.
 	announcer := Announcer new.
 ]

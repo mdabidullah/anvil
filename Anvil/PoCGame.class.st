@@ -60,14 +60,14 @@ PoCGame >> initialize [
 	window := PoCWindow new 
 		extent: (self class resolution);
 		title: 'PoC'.
-	view := PoCView new state: state.
-	
+	view := PoCView new.
+	view state: state.
+	model state: state.
 	window addChild: view.
 	
 	window root addEventHandler: (PoCEventListener new 
 												model: model).
 	
-	model state: state.
 	
 	state announcer when: PoCStateChangedAnnouncement send: #stateChanged to: window.
 	

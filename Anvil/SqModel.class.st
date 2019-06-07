@@ -162,6 +162,7 @@ SqModel >> state: aState [
 	state := aState.
 	self flag: 'initialize state'.
 	state at: #time put: 1.0.
+	state at: #offset put: 20@10.
 	state at: #levelSize put: 31. 
 ]
 

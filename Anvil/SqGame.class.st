@@ -21,9 +21,10 @@ SqGame >> initialize [
 	state := SqState new.
 	window := SqWindow new 
 		extent: (self class resolution);
-		title: 'PoC'.
-	view := SqView new state: state.
-	view model: model.
+		title: 'SquareSquare'.
+	view := SqView new.
+	view state: state.
+	
 	model state: state.
 	
 	window addChild: view.

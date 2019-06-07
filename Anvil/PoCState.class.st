@@ -21,6 +21,7 @@ PoCState >> at: aKey [
 
 { #category : #initialization }
 PoCState >> at: aKey put: aValue [
+	self halt.
 	values add: (aKey -> aValue).
 	self stateChanged.
 ]
@@ -40,5 +41,6 @@ PoCState >> saveState [
 
 { #category : #initialization }
 PoCState >> stateChanged [
+	Transcript show: 'State changed'; cr.
 	announcer announce: PoCStateChangedAnnouncement new.
 ]

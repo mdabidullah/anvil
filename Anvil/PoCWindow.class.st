@@ -25,5 +25,6 @@ PoCWindow >> state: aState [
 
 { #category : #initialization }
 PoCWindow >> stateChanged [
+	Transcript show: 'Received announcement'.
 	view update.
 ]
