@@ -56,12 +56,11 @@ SqState >> at: aKey put: aValue [
 
 { #category : #anvil }
 SqState >> initialize [ 
-	self halt.
 	values := Dictionary new.
 	announcer := Announcer new.
 ]
 
 { #category : #anvil }
 SqState >> stateChanged [
-	announcer announce: PoCStateChangedAnnouncement new.
+	announcer announce: SqStateChangedAnnouncement new.
 ]
