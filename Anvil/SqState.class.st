@@ -13,18 +13,21 @@ _______________
 
 #shapeRotation : a Number, representing the current rotation of the shape. 
 
-#
-
 #Level Related#
 _______________
 
 #levelSize : a Number, 
 
-#level : an OrderedCollection containing Dictionarys:
-	#point: a Point, each point contains the location of a cell in the level that has an active cell. 
-	#
+#offset : a Number, which is the drawing point of the level.
 
 #levelOrientation : a Number that keeps track of the orientation of the cell. 
+
+#level : an Array2D, containing the level state, the placed cells. 
+
+#Visual Related#
+________________
+
+#cellSize: a Number, representing the size of a cell in pixels
 
 "
 Class {

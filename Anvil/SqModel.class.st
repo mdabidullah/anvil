@@ -161,9 +161,23 @@ SqModel >> rotationPossible [
 SqModel >> state: aState [
 	state := aState.
 	self flag: 'initialize state'.
+	"Time"
 	state at: #time put: 1.0.
-	state at: #offset put: 20@10.
+	
+	"Shape"
+	state at: #shapeLocations put: #(0@0 0@0 0@0 0@0). 
+	state at: #shapeMatrix put: SqModel IMatrix.
+	state at: #shapeRotation put: 0.
+	
+	"Level"
 	state at: #levelSize put: 31. 
+	state at: #offset put: 20@10.
+	state at: #levelOrientation put: 0.
+	state at: #level put: (Array2D rows: (state at: #levelSize)
+										   columns: (state at: #levelSize)).
+										
+	"Visual"
+	state at: #cellSize put: 15.
 ]
 
 { #category : #'stepping and presenter' }

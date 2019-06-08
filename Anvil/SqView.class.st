@@ -30,7 +30,7 @@ SqView >> drawOnSpartaCanvas: aCanvas [
 	1 to: (state at: #levelSize) do: [ :i | 
 		aCanvas fill
 			path: (aCanvas shape roundedRectangle: (Rectangle origin: ((i*11)@(i*11)) extent: 10@10)                                    radii:(BlCornerRadii radius: 2) );
-			paint: (Color lightGray);
+			paint: (Color veryLightGray);
 			draw.
 		aCanvas fill
 			path: (aCanvas shape roundedRectangle: (Rectangle origin: ((352-(i*11))@(i*11)) extent: 10@10)                                    radii:(BlCornerRadii radius: 2) );
