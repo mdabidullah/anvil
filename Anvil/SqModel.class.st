@@ -1,3 +1,6 @@
+"
+Here I'll discuss the plan for how the game will work. 
+"
 Class {
 	#name : #SqModel,
 	#superclass : #Object,
@@ -167,6 +170,7 @@ SqModel >> state: aState [
 	"Shape"
 	state at: #shapeLocations put: #(0@0 0@0 0@0 0@0). 
 	state at: #shapeMatrix put: SqModel IMatrix.
+	state at: #matrixLocation: put: 15@1.
 	state at: #shapeRotation put: 0.
 	
 	"Level"

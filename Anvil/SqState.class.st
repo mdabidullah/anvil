@@ -11,6 +11,8 @@ _______________
 
 #shapeMatrix : a Matrix, the matrix representation of the shape 
 
+#matrixLocation : a Point, representing where the matrix is positioned. 
+
 #shapeRotation : a Number, representing the current rotation of the shape. 
 
 #Level Related#
