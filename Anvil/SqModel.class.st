@@ -18,6 +18,11 @@ SqModel class >> IMatrix [
 															   0 0 0 0 )
 ]
 
+{ #category : #'shape points' }
+SqModel class >> IPoints [
+	^ {0.5@(-2.5). 0.5@(-1.5). 0.5@0.5. 0.5@1.5}
+]
+
 { #category : #'shape matrices' }
 SqModel class >> JMatrix [
 	^ Array2D new rows: 3 columns: 3 contents: #( 1 0 0 
