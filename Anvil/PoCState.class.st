@@ -41,5 +41,5 @@ PoCState >> saveState [
 { #category : #initialization }
 PoCState >> stateChanged [
 	Transcript show: 'State changed'; cr.
-	announcer announce: PoCStateChangedAnnouncement new.
+	announcer announce: AnvilStateChangedAnnouncement new.
 ]

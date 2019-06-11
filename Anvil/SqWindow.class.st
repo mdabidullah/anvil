@@ -2,7 +2,8 @@ Class {
 	#name : #SqWindow,
 	#superclass : #BlSpace,
 	#instVars : [
-		'view'
+		'view',
+		'game'
 	],
 	#category : #'Anvil-SquareSquare'
 }
@@ -15,8 +16,13 @@ SqWindow >> addChild: aBlElement [
 
 { #category : #anvil }
 SqWindow >> close [
-	view unsubscribe.
 	super close.
+	game quit.
+]
+
+{ #category : #anvil }
+SqWindow >> game: aGame [
+	game := aGame.
 ]
 
 { #category : #anvil }

@@ -5,7 +5,8 @@ Class {
 		'model',
 		'state',
 		'window',
-		'view'
+		'view',
+		'scheduler'
 	],
 	#category : #'Anvil-SquareSquare'
 }
@@ -39,6 +40,10 @@ SqGame >> initialize [
 { #category : #anvil }
 SqGame >> model [ 
 	^ model
+]
+
+{ #category : #'private protocol' }
+SqGame >> quit [
 ]
 
 { #category : #anvil }

@@ -1,5 +1,5 @@
 Class {
-	#name : #PoCStateChangedAnnouncement,
+	#name : #AnvilStateChangedAnnouncement,
 	#superclass : #Announcement,
 	#category : #'Anvil-ProofOfConcept'
 }

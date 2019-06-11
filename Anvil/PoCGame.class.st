@@ -19,7 +19,8 @@ Class {
 		'window',
 		'view',
 		'state',
-		'model'
+		'model',
+		'scheduler'
 	],
 	#category : #'Anvil-ProofOfConcept'
 }
@@ -48,7 +49,7 @@ window root addEventHandler: (PoCEventListener new
 	
 model state: state.
 	
-model announcer when: PoCStateChangedAnnouncement send: #stateChanged to: window.
+model announcer when: AnvilStateChangedAnnouncement send: #stateChanged to: window.
 	
 window show.
 ]
@@ -57,20 +58,22 @@ window show.
 PoCGame >> initialize [
 	model := PoCModel new.
 	state := PoCState new.
+	scheduler := PoCScheduler new.
 	window := PoCWindow new 
 		extent: (self class resolution);
 		title: 'PoC'.
 	view := PoCView new.
 	view state: state.
 	model state: state.
-	view model: model.
+	scheduler model: model.
+	"view model: model."
 	window addChild: view.
 	
 	window root addEventHandler: (PoCEventListener new 
 												model: model).
 	
 	
-	state announcer when: PoCStateChangedAnnouncement send: #stateChanged to: window.
+	state announcer when: AnvilStateChangedAnnouncement send: #stateChanged to: window.
 	
 ]
 
@@ -82,6 +85,7 @@ PoCGame >> model [
 { #category : #accessing }
 PoCGame >> start [
 	window show.
+	scheduler startProcess.
 ]
 
 { #category : #accessing }
