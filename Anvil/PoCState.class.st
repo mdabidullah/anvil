@@ -21,7 +21,6 @@ PoCState >> at: aKey [
 
 { #category : #initialization }
 PoCState >> at: aKey put: aValue [
-	self halt.
 	values add: (aKey -> aValue).
 	self stateChanged.
 ]

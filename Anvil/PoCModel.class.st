@@ -42,5 +42,12 @@ PoCModel >> moveUp [
 { #category : #initialization }
 PoCModel >> state: aState [
 	state := aState.
-	state at: #location put: (11@11). 
+	state at: #location put: (10@10). 
+	state at: #rotation put: 1.
+]
+
+{ #category : #'stepping and presenter' }
+PoCModel >> step [
+	Transcript show: 'Step'; cr.
+	state at: #rotation put: ((state at: #rotation) + 10)
 ]

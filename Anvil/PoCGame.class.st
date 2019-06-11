@@ -63,6 +63,7 @@ PoCGame >> initialize [
 	view := PoCView new.
 	view state: state.
 	model state: state.
+	view model: model.
 	window addChild: view.
 	
 	window root addEventHandler: (PoCEventListener new 

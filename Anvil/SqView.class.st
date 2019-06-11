@@ -14,6 +14,8 @@ SqView >> drawOnSpartaCanvas: aCanvas [
 		
 	aCanvas transform
 		translateBy: (state at: #offset);
+		scaleBy: 2;
+		rotateByDegrees: 0;
 		push.
 	
 	"draw level"

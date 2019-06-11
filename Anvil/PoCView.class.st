@@ -14,19 +14,38 @@ Class {
 	#superclass : #BlElement,
 	#instVars : [
 		'state',
-		'element'
+		'element',
+		'model'
 	],
 	#category : #'Anvil-ProofOfConcept'
 }
 
 { #category : #drawing }
 PoCView >> drawOnSpartaCanvas: aCanvas [
-	aCanvas fill
-		path: (aCanvas shape roundedRectangle: (Rectangle origin: (state at: #location) extent: 10@10) radii:(BlCornerRadii radius: 4) );
-		paint: (Color black);
-		draw.
-		
-	""
+	super drawOnSpartaCanvas: aCanvas.
+	"aCanvas transform
+		translateBy: 100@100;
+		rotateByDegrees: (state at: #rotation);
+		push."
+
+	aCanvas transform
+	by: [ :aTransform | 
+		aTransform 
+			translateBy: 100@50"-50@(-50)";
+			rotateByDegrees: (state at: #rotation) ]
+	during: [  
+		aCanvas fill
+			path: 
+				(aCanvas shape 
+					roundedRectangle: 
+						(Rectangle origin: (state at: #location) extent: 10@10) 
+					radii:(BlCornerRadii radius: 2) );
+			paint: (Color black);
+			draw.
+	].
+
+	"aCanvas translate
+		pop."
 ]
 
 { #category : #initialization }
@@ -52,6 +71,14 @@ PoCView >> initialize [
 	]"
 	"((31 * 31) timesCollect: [ :pos | PoCElement new position: pos ]) do: [ :element |
 		]"
+]
+
+{ #category : #accessing }
+PoCView >> model: aModel [
+	model := aModel.
+	
+	self enqueueTask: (BlRepeatedTaskAction new delay: 16 milliSeconds; 
+															  action: [ model step ]).
 ]
 
 { #category : #accessing }
