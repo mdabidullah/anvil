@@ -1,43 +1,48 @@
 Class {
-	#name : #PoCScheduler,
+	#name : #AnvilScheduler,
 	#superclass : #Object,
 	#instVars : [
 		'process',
-		'managedObject',
-		'model'
+		'model',
+		'running'
 	],
-	#category : #'Anvil-ProofOfConcept'
+	#category : #'Anvil-Prototype'
 }
 
 { #category : #'initialize-release' }
-PoCScheduler >> initialize [
+AnvilScheduler >> initialize [
+	| block |
 	super initialize.
+	running := false.
+	
+	block := [ model step ].
 	
 	process := self newProcessWithPriority: 30 
-						 do: [ model step ] 
+						 do: block
 						 every: self minTimeBetweenRendering.
 ]
 
 { #category : #accessing }
-PoCScheduler >> maxFrameRate [ 
+AnvilScheduler >> maxFrameRate [ 
 	^ 50 "frames per second"
 ]
 
 { #category : #accessing }
-PoCScheduler >> minTimeBetweenRendering [ 
+AnvilScheduler >> minTimeBetweenRendering [ 
 	^ (1000 "ms" / self maxFrameRate) milliSeconds.
 ]
 
 { #category : #accessing }
-PoCScheduler >> model: aModel [
+AnvilScheduler >> model: aModel [
 	model := aModel.
 ]
 
 { #category : #'initialize-release' }
-PoCScheduler >> newProcessWithPriority: aPriority do: aBlock every: duration [
+AnvilScheduler >> newProcessWithPriority: aPriority do: aBlock every: duration [
 	^ [ 
 		[ | time delay |
 			time := DateAndTime now.
+			running ifTrue: [ aBlock value. ].
 			aBlock value.
 			delay := duration - (DateAndTime now - time).
 			delay negative 
@@ -47,16 +52,18 @@ PoCScheduler >> newProcessWithPriority: aPriority do: aBlock every: duration [
 ]
 
 { #category : #'initialize-release' }
-PoCScheduler >> process [
+AnvilScheduler >> process [
 	^ process.
 ]
 
 { #category : #'initialize-release' }
-PoCScheduler >> startProcess [
+AnvilScheduler >> startProcess [
+	running := true.
 	process resume
 ]
 
 { #category : #'initialize-release' }
-PoCScheduler >> terminateProcess [
+AnvilScheduler >> stopProcess [
+	running := false.
 	[ process terminate ] on: Error do: [  ]
 ]

@@ -10,18 +10,18 @@ PoCView does not have a drawing loop. A drawing loop could be created with:
 The function step would be responsible for calling `self invalidate`. `invalidate` should only be called when necessary for performance. A variable to keep track of whether a redraw is necessary could be created. 
 "
 Class {
-	#name : #PoCView,
+	#name : #AnvilView,
 	#superclass : #BlElement,
 	#instVars : [
 		'state',
 		'element',
 		'model'
 	],
-	#category : #'Anvil-ProofOfConcept'
+	#category : #'Anvil-Prototype'
 }
 
 { #category : #drawing }
-PoCView >> drawOnSpartaCanvas: aCanvas [
+AnvilView >> drawOnSpartaCanvas: aCanvas [
 	super drawOnSpartaCanvas: aCanvas.
 	"aCanvas transform
 		translateBy: 100@100;
@@ -49,12 +49,14 @@ PoCView >> drawOnSpartaCanvas: aCanvas [
 ]
 
 { #category : #initialization }
-PoCView >> initialize [
+AnvilView >> initialize [
 	super initialize.
 
-	self size: PoCGame resolution.
+	self size: AnvilGame resolution.
 	
 	self background: Color lightGray.
+	
+	SystemAnnouncer uniqueInstance when: MethodModified do: [:methodModified | methodModified method selector == #drawOnSpartaCanvas: ifTrue: self update ].
 	
 	"self enqueueTask: (BlRepeatedTaskAction new delay: 16 milliSeconds; action: [ self step ])."
 	
@@ -74,28 +76,21 @@ PoCView >> initialize [
 ]
 
 { #category : #accessing }
-PoCView >> model: aModel [
+AnvilView >> model: aModel [
 	model := aModel.
-	
-	self enqueueTask: (BlRepeatedTaskAction new delay: 16 milliSeconds; 
-															  action: [ model step ]).
 ]
 
 { #category : #accessing }
-PoCView >> state: aState [
+AnvilView >> state: aState [
 	state := aState.
 ]
 
-{ #category : #drawing }
-PoCView >> test [
-]
-
-{ #category : #drawing }
-PoCView >> test1 [
-	^ 5
+{ #category : #announcement }
+AnvilView >> unsubscribe [
+	SystemAnnouncer uniqueInstance unsubscribe: self. 
 ]
 
 { #category : #accessing }
-PoCView >> update [
+AnvilView >> update [
 	self invalidate.
 ]

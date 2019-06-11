@@ -44,6 +44,7 @@ SqGame >> model [
 
 { #category : #'private protocol' }
 SqGame >> quit [
+	view unsubscribe.
 ]
 
 { #category : #anvil }

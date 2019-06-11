@@ -13,7 +13,7 @@ Also need to be able to alter state.
 
 "
 Class {
-	#name : #PoCGame,
+	#name : #AnvilGame,
 	#superclass : #Object,
 	#instVars : [
 		'window',
@@ -22,28 +22,28 @@ Class {
 		'model',
 		'scheduler'
 	],
-	#category : #'Anvil-ProofOfConcept'
+	#category : #'Anvil-Prototype'
 }
 
 { #category : #'as yet unclassified' }
-PoCGame class >> resolution [
+AnvilGame class >> resolution [
 	^ 768@432
 ]
 
 { #category : #running }
-PoCGame class >> run [ 
+AnvilGame class >> run [ 
 	<script>
 	| model state window view|
-	model := PoCModel new.
-state := PoCState new.
-view := PoCView new state: state.
-window := PoCWindow new 
+	model := AnvilModel new.
+state := AnvilState new.
+view := AnvilView new state: state.
+window := AnvilWindow new 
 	extent: 768@432;
 	title: 'PoC'.
 
 window view: view.
 
-window root addEventHandler: (PoCEventListener new 
+window root addEventHandler: (AnvilEventListener new 
 											model: model).
 
 	
@@ -55,21 +55,22 @@ window show.
 ]
 
 { #category : #accessing }
-PoCGame >> initialize [
-	model := PoCModel new.
-	state := PoCState new.
-	scheduler := PoCScheduler new.
-	window := PoCWindow new 
+AnvilGame >> initialize [
+	model := AnvilModel new.
+	state := AnvilState new.
+	scheduler := AnvilScheduler new.
+	window := AnvilWindow new 
 		extent: (self class resolution);
 		title: 'PoC'.
-	view := PoCView new.
+	view := AnvilView new.
 	view state: state.
 	model state: state.
 	scheduler model: model.
+	window game: self.
 	"view model: model."
 	window addChild: view.
 	
-	window root addEventHandler: (PoCEventListener new 
+	window root addEventHandler: (AnvilEventListener new 
 												model: model).
 	
 	
@@ -78,32 +79,39 @@ PoCGame >> initialize [
 ]
 
 { #category : #accessing }
-PoCGame >> model [ 
+AnvilGame >> model [ 
 	^ model
 ]
 
 { #category : #accessing }
-PoCGame >> start [
-	window show.
-	scheduler startProcess.
+AnvilGame >> quit [
+	view unsubscribe.
+	scheduler stopProcess.
+	
 ]
 
 { #category : #accessing }
-PoCGame >> state [ 
+AnvilGame >> start [
+	window show.
+	"scheduler startProcess."
+]
+
+{ #category : #accessing }
+AnvilGame >> state [ 
 	^ state
 ]
 
 { #category : #accessing }
-PoCGame >> update [ 
+AnvilGame >> update [ 
 	view update.
 ]
 
 { #category : #accessing }
-PoCGame >> view [ 
+AnvilGame >> view [ 
 	^ view
 ]
 
 { #category : #accessing }
-PoCGame >> window [
+AnvilGame >> window [
 	^ window.
 ]

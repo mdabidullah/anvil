@@ -1,14 +1,14 @@
 Class {
-	#name : #PoCEventListener,
+	#name : #AnvilEventListener,
 	#superclass : #BlElementEventListener,
 	#instVars : [
 		'model'
 	],
-	#category : #'Anvil-ProofOfConcept'
+	#category : #'Anvil-Prototype'
 }
 
 { #category : #'keyboard handlers' }
-PoCEventListener >> keystrokeEvent: aEvent [
+AnvilEventListener >> keystrokeEvent: aEvent [
 	((Dictionary new
 		at: (Character arrowDown asInteger) put: [ model event: #Down ];
 		at: (Character arrowLeft asInteger) put: [ model event: #Left ];
@@ -20,6 +20,6 @@ PoCEventListener >> keystrokeEvent: aEvent [
 ]
 
 { #category : #'keyboard handlers' }
-PoCEventListener >> model: aModel [
+AnvilEventListener >> model: aModel [
 	model := aModel.
 ]

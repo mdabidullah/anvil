@@ -65,7 +65,7 @@ SqView >> drawOnSpartaCanvas: aCanvas [
 SqView >> initialize [
 	super initialize.
 	
-	self size: PoCGame resolution.
+	self size: AnvilGame resolution.
 	
 	self enqueueTask: (BlRepeatedTaskAction new delay: 1 seconds; 
 															 action: [ self step ]).

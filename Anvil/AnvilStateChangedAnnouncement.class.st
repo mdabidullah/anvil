@@ -1,5 +1,5 @@
 Class {
 	#name : #AnvilStateChangedAnnouncement,
 	#superclass : #Announcement,
-	#category : #'Anvil-ProofOfConcept'
+	#category : #'Anvil-Prototype'
 }

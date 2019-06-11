@@ -1,14 +1,14 @@
 Class {
-	#name : #PoCModel,
+	#name : #AnvilModel,
 	#superclass : #Object,
 	#instVars : [
 		'state'
 	],
-	#category : #'Anvil-ProofOfConcept'
+	#category : #'Anvil-Prototype'
 }
 
 { #category : #initialization }
-PoCModel >> event: aEvent [
+AnvilModel >> event: aEvent [
 	aEvent == #Left ifTrue: [ self moveLeft ].
 	aEvent == #Right ifTrue: [ self moveRight ].
 	aEvent == #Up ifTrue: [ self moveUp ].
@@ -16,38 +16,37 @@ PoCModel >> event: aEvent [
 ]
 
 { #category : #initialization }
-PoCModel >> initialize [         
+AnvilModel >> initialize [         
 ]
 
 { #category : #initialization }
-PoCModel >> moveDown [
+AnvilModel >> moveDown [
 	state at: #location put: (state at: #location) + (0@(-10)).
 ]
 
 { #category : #initialization }
-PoCModel >> moveLeft [ 
+AnvilModel >> moveLeft [ 
 	state at: #location put: (state at: #location) + (10@0).
 ]
 
 { #category : #initialization }
-PoCModel >> moveRight [ 
+AnvilModel >> moveRight [ 
 	state at: #location put: (state at: #location) + (-10@0).
 ]
 
 { #category : #initialization }
-PoCModel >> moveUp [
+AnvilModel >> moveUp [
 	state at: #location put: (state at: #location) + (0@(10)).
 ]
 
 { #category : #initialization }
-PoCModel >> state: aState [
+AnvilModel >> state: aState [
 	state := aState.
 	state at: #location put: (10@10). 
 	state at: #rotation put: 1.
 ]
 
 { #category : #'stepping and presenter' }
-PoCModel >> step [
-	Transcript show: 'Step'; cr.
+AnvilModel >> step [
 	state at: #rotation put: ((state at: #rotation) + 10)
 ]
