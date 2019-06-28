@@ -1,66 +1,29 @@
 Class {
 	#name : #SqGame,
-	#superclass : #Object,
-	#instVars : [
-		'model',
-		'state',
-		'window',
-		'view'
-	],
+	#superclass : #AnvilGame,
 	#category : #'Anvil-SquareSquare'
 }
 
-{ #category : #'as yet unclassified' }
-SqGame class >> resolution [
-	^ 768@432
-]
-
-{ #category : #anvil }
-SqGame >> initialize [
+{ #category : #accessing }
+SqGame >> initialize [	
 	model := SqModel new.
-	state := SqState new.
-	window := SqWindow new 
+	state := AnvilState new.
+	window := AnvilWindow new 
 		extent: (self class resolution);
-		title: 'PoC'.
+		title: self title.
 	view := SqView new state: state.
 	
 	window addChild: view.
 	
-	window root addEventHandler: (SqEventListener new 
+	window root addEventHandler: (AnvilEventListener new 
 												model: model).
 	
 	model state: state.
 	
-	state announcer when: SqStateChangedAnnouncement send: #stateChanged to: window.
-	
+	state announcer when: AnvilStateChangedAnnouncement send: #stateChanged to: window.	
 ]
 
-{ #category : #anvil }
-SqGame >> model [ 
-	^ model
-]
-
-{ #category : #anvil }
-SqGame >> start [
-	window show.
-]
-
-{ #category : #anvil }
-SqGame >> state [ 
-	^ state
-]
-
-{ #category : #anvil }
-SqGame >> update [ 
-	view update.
-]
-
-{ #category : #anvil }
-SqGame >> view [ 
-	^ view
-]
-
-{ #category : #anvil }
-SqGame >> window [
-	^ window.
+{ #category : #accessing }
+SqGame >> title [ 
+	^ 'SquareSquare'.
 ]

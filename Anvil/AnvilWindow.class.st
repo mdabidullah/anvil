@@ -1,35 +1,35 @@
 Class {
-	#name : #SqWindow,
+	#name : #AnvilWindow,
 	#superclass : #BlSpace,
 	#instVars : [
 		'view'
 	],
-	#category : #'Anvil-SquareSquare'
+	#category : #'Anvil-Base'
 }
 
 { #category : #anvil }
-SqWindow >> addChild: aBlElement [
+AnvilWindow >> addChild: aBlElement [
 	super addChild: aBlElement.
 	view := aBlElement.
 ]
 
 { #category : #anvil }
-SqWindow >> close [
+AnvilWindow >> close [
 	view unsubscribe.
 	super close.
 ]
 
 { #category : #anvil }
-SqWindow >> initialize [
+AnvilWindow >> initialize [
 	super initialize.
 ]
 
 { #category : #anvil }
-SqWindow >> state: aState [
+AnvilWindow >> state: aState [
 	view state: aState.
 ]
 
 { #category : #anvil }
-SqWindow >> stateChanged [
+AnvilWindow >> stateChanged [
 	view update.
 ]

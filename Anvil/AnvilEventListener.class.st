@@ -1,14 +1,17 @@
+"
+I am a EventListener, I pass on events to AnvilModel.
+"
 Class {
-	#name : #SqEventListener,
+	#name : #AnvilEventListener,
 	#superclass : #BlElementEventListener,
 	#instVars : [
 		'model'
 	],
-	#category : #'Anvil-SquareSquare'
+	#category : #'Anvil-Base'
 }
 
 { #category : #anvil }
-SqEventListener >> keystrokeEvent: aEvent [
+AnvilEventListener >> keystrokeEvent: aEvent [
 	((Dictionary new
 		at: (Character arrowDown asInteger) put: [ model event: #Down ];
 		at: (Character arrowLeft asInteger) put: [ model event: #Left ];
@@ -20,6 +23,6 @@ SqEventListener >> keystrokeEvent: aEvent [
 ]
 
 { #category : #anvil }
-SqEventListener >> model: aModel [
+AnvilEventListener >> model: aModel [
 	model := aModel.
 ]
