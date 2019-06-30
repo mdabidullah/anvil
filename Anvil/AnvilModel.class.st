@@ -30,3 +30,8 @@ AnvilModel >> state: aState [
 	state := aState.
 	self initializeState.
 ]
+
+{ #category : #anvil }
+AnvilModel >> step [
+	self subclassResponsibility.
+]

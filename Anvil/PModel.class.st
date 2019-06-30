@@ -17,7 +17,8 @@ PModel >> event: aEvent [
 
 { #category : #initialization }
 PModel >> initializeState [
-	state at: #location put: (10@10).
+	state at: #location put: (20@20).
+	state at: #rotation put: 10.
 ]
 
 { #category : #initialization }
@@ -38,4 +39,9 @@ PModel >> moveRight [
 { #category : #initialization }
 PModel >> moveUp [
 	state at: #location put: (state at: #location) + (0@(-10)).
+]
+
+{ #category : #anvil }
+PModel >> step [
+	state at: #rotation put: ((state at: #rotation) + 10).
 ]

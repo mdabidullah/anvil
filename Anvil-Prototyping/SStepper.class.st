@@ -1,0 +1,56 @@
+Class {
+	#name : #SStepper,
+	#superclass : #Object,
+	#instVars : [
+		'process',
+		'steppingObject'
+	],
+	#category : #'Anvil-Prototyping-Stepper'
+}
+
+{ #category : #accessing }
+SStepper >> name [
+	^ 'SStepper'
+]
+
+{ #category : #'instance creation' }
+SStepper >> newProcessAt: priority do: aBlock every: duration [
+	^ [ 
+		[ | time delay |
+		time := DateAndTime now.
+		aBlock value.
+		delay := duration - (DateAndTime now - time).
+		delay negative 
+			ifFalse: [ delay wait ]
+			ifTrue: [ "slowing process" ]
+		 ] repeat ] forkAt: priority named: self name.
+
+	"See BlockClosure>>newProcess for an alternative implementation that does not start the process immediately"
+]
+
+{ #category : #accessing }
+SStepper >> process [
+	^ process.
+]
+
+{ #category : #accessing }
+SStepper >> startProcess [
+	process resume
+]
+
+{ #category : #'as yet unclassified' }
+SStepper >> steppingObject [
+	^ steppingObject 
+]
+
+{ #category : #'as yet unclassified' }
+SStepper >> steppingObject: aObject [
+	steppingObject := aObject.
+	process := self newProcessAt: 30 do: [ steppingObject step ] every: 1 seconds.
+]
+
+{ #category : #accessing }
+SStepper >> terminateProcess [
+
+	[ process terminate ] on: Error do: [ ].
+]

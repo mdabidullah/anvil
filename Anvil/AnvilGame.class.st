@@ -60,7 +60,7 @@ AnvilGame >> initialize [
 												model: model).
 	
 	model state: state.
-	
+	view model: model.
 	state announcer when: AnvilStateChangedAnnouncement send: #stateChanged to: window.
 	"
 	self subclassResponsibility.
