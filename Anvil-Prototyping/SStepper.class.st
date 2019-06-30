@@ -1,3 +1,20 @@
+"
+stepper := SStepper new.
+
+view := SStepperView new. 
+
+window := BlSpace new
+	extent: AnvilGame resolution;
+	title: 'Stepper'.
+
+window addChild: view.
+
+stepper steppingObject: view.
+
+window show.
+
+stepper startProcess.
+"
 Class {
 	#name : #SStepper,
 	#superclass : #Object,
