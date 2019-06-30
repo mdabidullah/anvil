@@ -1,4 +1,6 @@
 "
+Code to Test the SStepper in playground
+
 stepper := SStepper new.
 
 view := SStepperView new. 
@@ -14,6 +16,8 @@ stepper steppingObject: view.
 window show.
 
 stepper startProcess.
+
+Finally use 'stepper terminateProcess' to stop the process from continuing indefinitely.
 "
 Class {
 	#name : #SStepper,
@@ -63,7 +67,7 @@ SStepper >> steppingObject [
 { #category : #'as yet unclassified' }
 SStepper >> steppingObject: aObject [
 	steppingObject := aObject.
-	process := self newProcessAt: 30 do: [ steppingObject step ] every: 1 seconds.
+	process := self newProcessAt: 50 do: [ steppingObject step ] every: 20 milliSeconds.
 ]
 
 { #category : #accessing }

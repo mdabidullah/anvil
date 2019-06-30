@@ -35,7 +35,7 @@ SStepperView >> drawOnSpartaCanvas: aCanvas [
 { #category : #initialization }
 SStepperView >> initialize [
 	super initialize.
-
+	rotation := 0.
 	self size: AnvilGame resolution.
 	
 ]
