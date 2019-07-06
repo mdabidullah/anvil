@@ -5,7 +5,7 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-SqView >> drawBackground: aCanvas rotation: aDegree [
+SqView >> drawBackground: aCanvas [
 	| aFont |
 	aFont := aCanvas font 
 					size: 10;
@@ -21,7 +21,7 @@ SqView >> drawBackground: aCanvas rotation: aDegree [
 	"draw level background"
 	aCanvas transform 
 		by: [ :aTransform | aTransform
-			rotateByDegrees: aDegree;
+			rotateByDegrees: (state at: #levelOrientation);
 			translateBy: (-180)@(-180)]
 		during: [ 
 			1 to: (state at: #levelSize) do: [ :x |
@@ -60,15 +60,6 @@ SqView >> drawBackground: aCanvas rotation: aDegree [
 							radii:(BlCornerRadii radius: 2) );
 				paint: (Color veryLightGray);
 				draw.
-					
-			"draw transformed drawing point"
-			aCanvas fill
-				path: (aCanvas shape 
-					roundedRectangle: (Rectangle origin: (-2)@(-2) 
-														  extent: 4@4)
-					radii:(BlCornerRadii radius: 2) );
-				paint: (Color blue);
-				draw.
 	
 			aCanvas transform 
 				by: [ :aTransform | aTransform 
@@ -86,29 +77,34 @@ SqView >> drawBackground: aCanvas rotation: aDegree [
 
 { #category : #drawing }
 SqView >> drawOnSpartaCanvas: aCanvas [
-	self drawBackground: aCanvas rotation: 45.
+	self drawBackground: aCanvas.
 	self drawShape: aCanvas.
 ]
 
 { #category : #drawing }
 SqView >> drawShape: aCanvas [ 
-	
-]
-
-{ #category : #drawing }
-SqView >> drawShape: aCanvas rotation: aDegree [
 	aCanvas transform
 		translateBy: (384@216);
-		"translateBy: 0@0;"
 		push.
 
-	"draw level background"
 	aCanvas transform 
 		by: [ :aTransform | aTransform
-			rotateByDegrees: aDegree;
+			rotateByDegrees: (state at: #levelOrientation);
 			translateBy: (-180)@(-180)]
 		during: [  
-			1 to: 4 do: [  ]
+			
+			1 to: 4 do: [ :i |
+				| point x y|
+				point := (state at: #shapeLocations) atWrap: i.
+				x := point x * 10 + point x. 
+				y := point y * 10 + point y.
+				aCanvas fill
+					path: (aCanvas shape 
+						roundedRectangle: (Rectangle origin: (x)@(y) 
+															  extent: 10@10)
+						radii:(BlCornerRadii radius: 2) );
+					paint: (Color darkGray);
+					draw. ]
 		].
 	
 	aCanvas transform pop

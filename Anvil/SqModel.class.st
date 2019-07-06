@@ -86,7 +86,7 @@ SqModel >> initializeState [
 	state at: #time put: 1.0.
 	
 	"Shape"
-	state at: #shapeLocations put: #(2@1 3@1 4@1 5@1). 
+	state at: #shapeLocations put: {2@1. 3@1. 4@1. 5@1}. 
 	state at: #shapeMatrix put: SqModel IMatrix.
 	state at: #matrixLocation: put: 15@1.
 	state at: #shapeRotation put: 0.
