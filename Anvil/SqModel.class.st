@@ -141,3 +141,8 @@ SqModel >> rotate [
 { #category : #anvil }
 SqModel >> rotationPossible [
 ]
+
+{ #category : #anvil }
+SqModel >> step [
+	
+]

@@ -33,8 +33,8 @@ AnvilView >> initialize [
 	
 	SystemAnnouncer uniqueInstance when: MethodModified do: [ :methodModified | methodModified method selector == #drawOnSpartaCanvas: ifTrue: self update ].
 	
-	self enqueueTask: (BlRepeatedTaskAction new delay: 16 milliSeconds; 
-															 action: [ self step ]).
+	"self enqueueTask: (BlRepeatedTaskAction new delay: 100 milliSeconds; 
+															 action: [ self step ])."
 ]
 
 { #category : #anvil }
