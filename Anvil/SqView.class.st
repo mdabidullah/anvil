@@ -4,18 +4,24 @@ Class {
 	#category : #'Anvil-SquareSquare'
 }
 
-{ #category : #drawing }
-SqView >> drawOnSpartaCanvas: aCanvas [
-	
+{ #category : #'as yet unclassified' }
+SqView >> drawBackground: aCanvas rotation: aDegree [
+	| aFont |
+	aFont := aCanvas font 
+					size: 10;
+					weightThin;
+					sansSerif;
+					build.
+
 	aCanvas transform
 		translateBy: (384@216);
 		"translateBy: 0@0;"
 		push.
-	
+
 	"draw level background"
 	aCanvas transform 
 		by: [ :aTransform | aTransform
-			rotateByDegrees: 45;
+			rotateByDegrees: aDegree;
 			translateBy: (-180)@(-180)]
 		during: [ 
 			1 to: (state at: #levelSize) do: [ :x |
@@ -64,15 +70,27 @@ SqView >> drawOnSpartaCanvas: aCanvas [
 				paint: (Color blue);
 				draw.
 	
-			].	
-	
-	"draw rotating point"
-	aCanvas fill
-		path: (aCanvas shape 
-					roundedRectangle: (Rectangle origin: (-2)@(-2) 
-														  extent: 4@4)
-					radii:(BlCornerRadii radius: 2) );
-		paint: (Color red);
-		draw.
+			aCanvas transform 
+				by: [ :aTransform | aTransform 
+					translateBy: (16*10+17)@20 ]
+				during: [ 
+					aCanvas text
+						font: aFont;
+						string: 'U';
+					draw
+				]
+		].	
+		
 	aCanvas transform pop
+]
+
+{ #category : #drawing }
+SqView >> drawOnSpartaCanvas: aCanvas [
+	self drawBackground: aCanvas rotation: 45.
+	self drawShape: aCanvas.
+]
+
+{ #category : #drawing }
+SqView >> drawShape: aCanvas [ 
+	
 ]
