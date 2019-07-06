@@ -51,7 +51,8 @@ AnvilGame >> initialize [
 	state := AnvilState new.
 	window := AnvilWindow new 
 		extent: (self class resolution);
-		title: self title.
+		title: self title;
+		position: 705@20.
 	view := AnvilView new state: state.
 	
 	window addChild: view.
@@ -75,6 +76,8 @@ AnvilGame >> model [
 { #category : #anvil }
 AnvilGame >> start [
 	window show.
+	window
+		position: 705@20.
 ]
 
 { #category : #anvil }

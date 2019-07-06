@@ -22,6 +22,9 @@ AnvilWindow >> close [
 { #category : #anvil }
 AnvilWindow >> initialize [
 	super initialize.
+	
+	self borderless: true.
+	
 ]
 
 { #category : #anvil }

@@ -94,3 +94,22 @@ SqView >> drawOnSpartaCanvas: aCanvas [
 SqView >> drawShape: aCanvas [ 
 	
 ]
+
+{ #category : #drawing }
+SqView >> drawShape: aCanvas rotation: aDegree [
+	aCanvas transform
+		translateBy: (384@216);
+		"translateBy: 0@0;"
+		push.
+
+	"draw level background"
+	aCanvas transform 
+		by: [ :aTransform | aTransform
+			rotateByDegrees: aDegree;
+			translateBy: (-180)@(-180)]
+		during: [  
+			1 to: 4 do: [  ]
+		].
+	
+	aCanvas transform pop
+]

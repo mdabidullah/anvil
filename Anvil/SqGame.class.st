@@ -11,6 +11,8 @@ SqGame >> initialize [
 	window := AnvilWindow new 
 		extent: (self class resolution);
 		title: self title.
+	window
+		position: 705@20.
 	view := SqView new state: state.
 	
 	window addChild: view.
