@@ -77,7 +77,7 @@ AnvilGame >> model [
 AnvilGame >> start [
 	window show.
 	window
-		position: 705@20.
+		position: 705@18.
 ]
 
 { #category : #anvil }

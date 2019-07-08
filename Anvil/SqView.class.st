@@ -4,7 +4,7 @@ Class {
 	#category : #'Anvil-SquareSquare'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #drawing }
 SqView >> drawBackground: aCanvas [
 	| aFont |
 	aFont := aCanvas font 
@@ -15,7 +15,6 @@ SqView >> drawBackground: aCanvas [
 
 	aCanvas transform
 		translateBy: (384@216);
-		"translateBy: 0@0;"
 		push.
 
 	"draw level background"
