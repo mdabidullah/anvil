@@ -47,24 +47,27 @@ SqModel class >> IMatrix [
 															   0 0 0 0 )
 ]
 
-{ #category : #anvil }
+{ #category : #'change quadrant' }
+SqModel >> changeQuadrant: aQuadrant [
+]
+
+{ #category : #ring }
 SqModel >> checkForRing [
 ]
 
-{ #category : #anvil }
+{ #category : #ring }
 SqModel >> checkForRings [
 ]
 
-{ #category : #anvil }
+{ #category : #start }
+SqModel >> chooseShape [
+]
+
+{ #category : #move }
 SqModel >> drop [
 ]
 
-{ #category : #anvil }
-SqModel >> dropToBottom [
-	"Drop all the way to bottom"
-]
-
-{ #category : #anvil }
+{ #category : #diagonal }
 SqModel >> enterDiagonal: aDirection [
 ]
 
@@ -76,7 +79,7 @@ SqModel >> event: aEvent [
 	aEvent == #Down ifTrue: [ self move: #Down ].
 ]
 
-{ #category : #anvil }
+{ #category : #diagonal }
 SqModel >> exitDiagonal: aDirection [
 ]
 
@@ -102,44 +105,48 @@ SqModel >> initializeState [
 	state at: #cellSize put: 15.
 ]
 
-{ #category : #anvil }
+{ #category : #move }
+SqModel >> land [
+]
+
+{ #category : #ring }
 SqModel >> manageCascade [
 ]
 
-{ #category : #anvil }
+{ #category : #move }
 SqModel >> move: aDirection [
 ]
 
-{ #category : #anvil }
+{ #category : #diagonal }
 SqModel >> moveDownDiagonal [
 ]
 
-{ #category : #anvil }
+{ #category : #diagonal }
 SqModel >> moveInDiagonal: aDirection [
 ]
 
-{ #category : #anvil }
+{ #category : #move }
 SqModel >> movePossible: aDirection [
 ]
 
-{ #category : #anvil }
+{ #category : #move }
 SqModel >> moveValid: aDirection [
 ]
 
-{ #category : #anvil }
-SqModel >> removeDirection [
-]
-
-{ #category : #anvil }
+{ #category : #ring }
 SqModel >> removeRing [
 ]
 
-{ #category : #anvil }
+{ #category : #rotate }
 SqModel >> rotate [
 ]
 
-{ #category : #anvil }
+{ #category : #rotate }
 SqModel >> rotationPossible [
+]
+
+{ #category : #start }
+SqModel >> start [
 ]
 
 { #category : #anvil }
