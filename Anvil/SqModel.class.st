@@ -36,15 +36,35 @@ ________________
 Class {
 	#name : #SqModel,
 	#superclass : #AnvilModel,
+	#instVars : [
+		'stateMachine'
+	],
 	#category : #'Anvil-SquareSquare'
 }
 
 { #category : #'as yet unclassified' }
-SqModel class >> IMatrix [
-	^ Array2D new rows: 4 columns: 4 contents: #( 0 0 0 0
-														 	   1 1 1 1
-														 	   0 0 0 0
-															   0 0 0 0 )
+SqModel class >> IShape [
+	^ { 1@1. 2@1. 3@1. 4@1 }
+]
+
+{ #category : #'as yet unclassified' }
+SqModel class >> OShape [
+	^ { 1@1. 2@1. 1@2. 2@2 }
+]
+
+{ #category : #shape }
+SqModel >> acceptShape [
+	"Check if the shape collides with board cells, if so game over"
+]
+
+{ #category : #shape }
+SqModel >> addShape [
+	self flag: 'TODO'.
+	"From the #shapeBag get a random piece, if the bag is empty then make a new 
+	bag"
+	(state at: #shapeBag) 
+	
+	"Set stateMachine to #ChooseQuadrant"
 ]
 
 { #category : #'change quadrant' }
@@ -57,10 +77,6 @@ SqModel >> checkForRing [
 
 { #category : #ring }
 SqModel >> checkForRings [
-]
-
-{ #category : #start }
-SqModel >> chooseShape [
 ]
 
 { #category : #move }
@@ -84,16 +100,22 @@ SqModel >> exitDiagonal: aDirection [
 ]
 
 { #category : #anvil }
+SqModel >> gameOver [
+]
+
+{ #category : #anvil }
+SqModel >> initialize [	
+	
+]
+
+{ #category : #anvil }
 SqModel >> initializeState [
 	"Time"
 	state at: #time put: 1.0.
 	
 	"Shape"
-	state at: #shapeLocations put: {2@1. 3@1. 4@1. 5@1}. 
-	state at: #shapeMatrix put: SqModel IMatrix.
-	state at: #matrixLocation: put: 15@1.
-	state at: #shapeRotation put: 0.
-	
+	state at: #shape put: { 2@1. 3@1. 4@1. 5@1 }. 
+	state at: #shapeBag put: (self makeShapeBag).
 	"Level"
 	state at: #levelSize put: 31. 
 	state at: #offset put: 20@10.
@@ -103,10 +125,34 @@ SqModel >> initializeState [
 										
 	"Visual"
 	state at: #cellSize put: 15.
+	
+	self startGame.
+]
+
+{ #category : #initialization }
+SqModel >> initializeStateMachine [
+	"The State machine is responsible for handling input in different states"
+	stateMachine := SsStateMachine new.
+	
+	stateMachine addStateNamed: #Start.
+	stateMachine setStartStateTo: #Start.
+	
+	stateMachine addStateNamed: #ChooseQuadrant. 
+	
+	stateMachine addStateNamed: #InQuadrant.
+	
+	stateMachine addStateNamed: #InDiagonal. 
+	
+	stateMachine addStateNamed: #Landed.
 ]
 
 { #category : #move }
 SqModel >> land [
+]
+
+{ #category : #shape }
+SqModel >> makeShapeBag [
+	self flag: 'TODO'.
 ]
 
 { #category : #ring }
@@ -137,6 +183,10 @@ SqModel >> moveValid: aDirection [
 SqModel >> removeRing [
 ]
 
+{ #category : #anvil }
+SqModel >> restartGame [
+]
+
 { #category : #rotate }
 SqModel >> rotate [
 ]
@@ -145,8 +195,10 @@ SqModel >> rotate [
 SqModel >> rotationPossible [
 ]
 
-{ #category : #start }
-SqModel >> start [
+{ #category : #initialization }
+SqModel >> startGame [
+	self initializeStateMachine.
+	state at: #shape put: (self addShape).
 ]
 
 { #category : #anvil }

@@ -17,12 +17,27 @@ AnvilModel >> event: aEvent [
 ]
 
 { #category : #anvil }
+AnvilModel >> gameOver [
+	self subclassResponsibility 
+]
+
+{ #category : #anvil }
 AnvilModel >> initialize [         
 ]
 
 { #category : #anvil }
 AnvilModel >> initializeState [
 	self subclassResponsibility.
+]
+
+{ #category : #anvil }
+AnvilModel >> restartGame [
+	self subclassResponsibility 
+]
+
+{ #category : #anvil }
+AnvilModel >> startGame [
+	self subclassResponsibility 
 ]
 
 { #category : #anvil }
