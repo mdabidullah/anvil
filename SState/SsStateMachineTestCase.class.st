@@ -96,6 +96,7 @@ SsStateMachineTestCase >> testDecision [
 	stateMachine setStartStateTo: #stateA.
 	
 	self assert:(stateMachine currentState id = #stateA).
+	self halt.
 	stateMachine handleEvent: #toB.
 	self assert:(stateMachine currentState id = #even).
 	stateMachine handleEvent: #toA.

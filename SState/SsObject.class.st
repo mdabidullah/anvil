@@ -22,7 +22,7 @@ SsObject >> = other [
 
 { #category : #'actions-event' }
 SsObject >> context [
-	^self stateMachine ifNotNil:[:sc | sc context]
+	^self stateMachine ifNotNil: [:sc | sc context]
 ]
 
 { #category : #accessing }

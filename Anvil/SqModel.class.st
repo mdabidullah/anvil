@@ -44,7 +44,7 @@ Class {
 
 { #category : #'as yet unclassified' }
 SqModel class >> IShape [
-	^ { 1@1. 2@1. 3@1. 4@1 }
+	^ { (-1.5)@(-0.5). (-0.5)@(-0.5). (0.5)@(-0.5). (1.5)@(-0.5) }
 ]
 
 { #category : #'as yet unclassified' }
@@ -53,18 +53,21 @@ SqModel class >> OShape [
 ]
 
 { #category : #shape }
-SqModel >> acceptShape [
-	"Check if the shape collides with board cells, if so game over"
-]
-
-{ #category : #shape }
 SqModel >> addShape [
 	self flag: 'TODO'.
 	"From the #shapeBag get a random piece, if the bag is empty then make a new 
 	bag"
-	(state at: #shapeBag) 
+	"(state at: #shapeBag) isNil 
+		ifTrue: [ state at: #shapeBag put: self makeShapeBag.
+					 self addShape. ] 
+		ifFalse: [ state at: #shapeBag  ]"
 	
-	"Set stateMachine to #ChooseQuadrant"
+	^ self class IShape.
+]
+
+{ #category : #shape }
+SqModel >> canAcceptShape [
+	"Check if the shape collides with board cells, if so game over"
 ]
 
 { #category : #'change quadrant' }
@@ -89,6 +92,8 @@ SqModel >> enterDiagonal: aDirection [
 
 { #category : #anvil }
 SqModel >> event: aEvent [
+
+	stateMachine handleEvent: aEvent.
 	aEvent == #Left ifTrue: [ self move: #Left ].
 	aEvent == #Right ifTrue: [ self move: #Right ].
 	aEvent == #Up ifTrue: [ self move: #Up ].
@@ -116,6 +121,7 @@ SqModel >> initializeState [
 	"Shape"
 	state at: #shape put: { 2@1. 3@1. 4@1. 5@1 }. 
 	state at: #shapeBag put: (self makeShapeBag).
+	state at: #shapeLocation put: 1@1.
 	"Level"
 	state at: #levelSize put: 31. 
 	state at: #offset put: 20@10.
@@ -153,6 +159,10 @@ SqModel >> land [
 { #category : #shape }
 SqModel >> makeShapeBag [
 	self flag: 'TODO'.
+	"A shape bag is just a Dictionary. When we take a shape from it we mark that shape unusable. The shape bag consists of 28 elements"
+	"^ Dictionary new
+		at: 1 put: #IShape;
+		at: 2 put: #"
 ]
 
 { #category : #ring }
@@ -198,7 +208,10 @@ SqModel >> rotationPossible [
 { #category : #initialization }
 SqModel >> startGame [
 	self initializeStateMachine.
+	
 	state at: #shape put: (self addShape).
+	
+	stateMachine changeStateTo: #ChooseQuadrant.
 ]
 
 { #category : #anvil }

@@ -74,10 +74,16 @@ AnvilGame >> model [
 ]
 
 { #category : #anvil }
+AnvilGame >> restartWindow [
+	self flag: 'TODO'.
+	self notYetImplemented.
+]
+
+{ #category : #anvil }
 AnvilGame >> start [
 	window show.
 	window
-		position: 705@18.
+		position: 760@18.
 ]
 
 { #category : #anvil }
