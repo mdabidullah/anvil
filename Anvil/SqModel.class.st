@@ -135,21 +135,32 @@ SqModel >> initializeState [
 	self startGame.
 ]
 
-{ #category : #initialization }
+{ #category : #'state machine' }
 SqModel >> initializeStateMachine [
 	"The State machine is responsible for handling input in different states"
 	stateMachine := SsStateMachine new.
 	
-	stateMachine addStateNamed: #Start.
-	stateMachine setStartStateTo: #Start.
-	
 	stateMachine addStateNamed: #ChooseQuadrant. 
-	
+	stateMachine addStateNamed: #AcceptShape. 
 	stateMachine addStateNamed: #InQuadrant.
-	
 	stateMachine addStateNamed: #InDiagonal. 
-	
 	stateMachine addStateNamed: #Landed.
+	stateMachine addStateNamed: #GameOver.
+
+	stateMachine 
+		setDecisionFrom: #AcceptShape 
+		if: [ self canAcceptShape ] 
+		trueTo: #InQuadrant
+		falseTo: #GameOver.
+
+	(stateMachine stateAt: #ChooseQuadrant) 
+		when: #Space to: #AcceptShape;
+		when: #Up do: [ self changeQuadrant: #Up ] to: #ChooseQuadrant;
+		when: #Down do: [ self changeQuadrant: #Down ] to: #ChooseQuadrant;
+		when: #Left do: [ self changeQuadrant: #Left ] to: #ChooseQuadrant;
+		when: #Right do: [ self changeQuadrant: #Right ] to: #ChooseQuadrant.
+
+	stateMachine setStartStateTo: #ChooseQuadrant.
 ]
 
 { #category : #move }
