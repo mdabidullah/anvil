@@ -38,7 +38,7 @@ PModel >> moveRight [
 
 { #category : #initialization }
 PModel >> moveUp [
-	state at: #location put: (state at: #location) + (0@(-10)).
+	state updateAt: #location put: (state at: #location) + (0@(-10)).
 ]
 
 { #category : #anvil }

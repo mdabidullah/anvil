@@ -25,7 +25,6 @@ AnvilState >> at: aKey [
 { #category : #anvil }
 AnvilState >> at: aKey put: aValue [
 	values add: (aKey -> aValue).
-	self stateChanged.
 ]
 
 { #category : #anvil }
@@ -38,4 +37,10 @@ AnvilState >> initialize [
 { #category : #anvil }
 AnvilState >> stateChanged [
 	announcer announce: AnvilStateChangedAnnouncement new.
+]
+
+{ #category : #anvil }
+AnvilState >> updateAt: aKey put: aValue [
+	values add: (aKey -> aValue).
+	self stateChanged.
 ]

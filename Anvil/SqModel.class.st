@@ -42,32 +42,73 @@ Class {
 	#category : #'Anvil-SquareSquare'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #shapes }
 SqModel class >> IShape [
 	^ { (-1.5)@(-0.5). (-0.5)@(-0.5). (0.5)@(-0.5). (1.5)@(-0.5) }
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #shapes }
+SqModel class >> JShape [
+	^ { (-1)@1.     
+		 (-1)@0.  0@0. 1@0 }
+]
+
+{ #category : #shapes }
+SqModel class >> LShape [
+	^ { 				    1@1.     
+		 (-1)@0.  0@0.  1@0. }
+]
+
+{ #category : #shapes }
 SqModel class >> OShape [
-	^ { 1@1. 2@1. 1@2. 2@2 }
+	^ { (-0.5)@0.5.     0.5@0.5.
+		 (-0.5)@(-0.5).  0.5@(-0.5). }
+]
+
+{ #category : #shapes }
+SqModel class >> SShape [
+	^ { 			 0@1. 1@1.     
+		 (-1)@0.  0@0       }
+]
+
+{ #category : #shapes }
+SqModel class >> TShape [
+	^ { 			 0@1. 
+		 (-1)@0.  0@0. 1@0 }
+]
+
+{ #category : #shapes }
+SqModel class >> ZShape [
+	^ { (-1)@1. 0@1. 
+		         0@0. 1@0 }
+]
+
+{ #category : #utility }
+SqModel class >> pixelToPoint: aPoint [
+]
+
+{ #category : #utility }
+SqModel class >> pointToPixel: aPoint [
+]
+
+{ #category : #utility }
+SqModel class >> quadrant: aQuadrant ToGlobal: aPoint [ 
+	"Convert a quadrant coordinate to global coordinates"
 ]
 
 { #category : #shape }
-SqModel >> addShape [
-	self flag: 'TODO'.
-	"From the #shapeBag get a random piece, if the bag is empty then make a new 
-	bag"
-	"(state at: #shapeBag) isNil 
-		ifTrue: [ state at: #shapeBag put: self makeShapeBag.
-					 self addShape. ] 
-		ifFalse: [ state at: #shapeBag  ]"
+SqModel >> addNewShape [
+	| shape |
 	
-	^ self class IShape.
+	shape := self getShapeFromBag.
+	state at: #shape put: (self getShape: shape).
+	state at: #shapeType put: shape.
+	state at: #shapeLocation put: (self getShapeStartingLocation: shape)
 ]
 
 { #category : #shape }
 SqModel >> canAcceptShape [
-	"Check if the shape collides with board cells, if so game over"
+	"Check if the shape collides with board cells, if so game over. Return either true or false"
 ]
 
 { #category : #'change quadrant' }
@@ -94,10 +135,6 @@ SqModel >> enterDiagonal: aDirection [
 SqModel >> event: aEvent [
 
 	stateMachine handleEvent: aEvent.
-	aEvent == #Left ifTrue: [ self move: #Left ].
-	aEvent == #Right ifTrue: [ self move: #Right ].
-	aEvent == #Up ifTrue: [ self move: #Up ].
-	aEvent == #Down ifTrue: [ self move: #Down ].
 ]
 
 { #category : #diagonal }
@@ -106,6 +143,34 @@ SqModel >> exitDiagonal: aDirection [
 
 { #category : #anvil }
 SqModel >> gameOver [
+]
+
+{ #category : #shape }
+SqModel >> getShape: aSymbol [
+	aSymbol = #I ifTrue: [ ^ self class IShape ].
+	aSymbol = #J ifTrue: [ ^ self class JShape ].
+	aSymbol = #L ifTrue: [ ^ self class LShape ].
+	aSymbol = #O ifTrue: [ ^ self class OShape ].
+	aSymbol = #S ifTrue: [ ^ self class SShape ].
+	aSymbol = #T ifTrue: [ ^ self class TShape ].
+	aSymbol = #Z ifTrue: [ ^ self class ZShape ].
+]
+
+{ #category : #shape }
+SqModel >> getShapeFromBag [
+	"From the #shapeBag get a random piece, if the bag is empty then make a new 
+	bag"
+	
+	| shape rand|
+	(state at: #shapeBag) size = 1 ifTrue: [ self makeShapeBag ].
+	rand := (state at: #shapeBag) size atRandom.
+	shape := (state at: #shapeBag) at: rand.
+	state at: #shapeBag put: ((state at: #shapeBag) removeAt: rand).
+	^ shape.
+]
+
+{ #category : #shape }
+SqModel >> getShapeStartingLocation: aShapeSymbol [
 ]
 
 { #category : #anvil }
@@ -119,13 +184,14 @@ SqModel >> initializeState [
 	state at: #time put: 1.0.
 	
 	"Shape"
-	state at: #shape put: { 2@1. 3@1. 4@1. 5@1 }. 
-	state at: #shapeBag put: (self makeShapeBag).
-	state at: #shapeLocation put: 1@1.
+	state at: #shape put: nil. 
+	state at: #shapeType put: nil.
+	state at: #shapeBag put: nil.
+	state at: #shapeLocation put: nil.
 	"Level"
 	state at: #levelSize put: 31. 
 	state at: #offset put: 20@10.
-	state at: #levelOrientation put: 0.
+	state at: #levelOrientation put: #Up.
 	state at: #level put: (Array2D rows: (state at: #levelSize)
 										   columns: (state at: #levelSize)).
 										
@@ -174,6 +240,7 @@ SqModel >> makeShapeBag [
 	"^ Dictionary new
 		at: 1 put: #IShape;
 		at: 2 put: #"
+	state at: #shapeBag put: (OrderedCollection newFrom: #(#I #J #L #O #S #T #Z #I #J #L #O #S #T #Z #I #J #L #O #S #T #Z #I #J #L #O #S #T #Z))
 ]
 
 { #category : #ring }
@@ -220,7 +287,7 @@ SqModel >> rotationPossible [
 SqModel >> startGame [
 	self initializeStateMachine.
 	
-	state at: #shape put: (self addShape).
+	self addNewShape.
 	
 	stateMachine changeStateTo: #ChooseQuadrant.
 ]
@@ -228,4 +295,36 @@ SqModel >> startGame [
 { #category : #anvil }
 SqModel >> step [
 	
+]
+
+{ #category : #'change quadrant' }
+SqModel >> translateOrientation: aDirection [
+	"This message translates the direction in relation to the current orientation"
+	((Dictionary new
+		at: #Up put: (Dictionary new 
+								at: #Up put: #Up;
+								at: #Down put: #Down;
+								at: #Right put: #Right;
+								at: #Left put: #Left;
+								yourself);
+		at: #Down put: (Dictionary new 
+								at: #Up put: #Down;
+								at: #Down put: #Up;
+								at: #Right put: #Left;
+								at: #Left put: #Right;
+								yourself);
+		at: #Right put: (Dictionary new 
+								at: #Up put: #Right;
+								at: #Down put: #Left;
+								at: #Right put: #Down;
+								at: #Left put: #Up;
+								yourself);
+		at: #Left put: (Dictionary new 
+								at: #Up put: #Left;
+								at: #Down put: #Right;
+								at: #Right put: #up;
+								at: #Left put: #Down;
+								yourself);
+								
+		yourself) at: (state at: #levelOrientation)) at: aDirection.
 ]
