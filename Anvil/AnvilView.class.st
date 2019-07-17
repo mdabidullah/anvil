@@ -45,6 +45,7 @@ AnvilView >> model: aAnvilModel [
 { #category : #anvil }
 AnvilView >> state: aState [
 	state := aState.
+	self update.
 ]
 
 { #category : #anvil }

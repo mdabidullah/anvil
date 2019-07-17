@@ -47,8 +47,10 @@ AnvilGame >> initialize [
 	"Example implementation, use your own classes as needed."
 	
 	"
-	model := AnvilModel new.
 	state := AnvilState new.
+	model := AnvilModel new.
+	model state: state.
+	
 	window := AnvilWindow new 
 		extent: (self class resolution);
 		title: self title;
@@ -60,7 +62,6 @@ AnvilGame >> initialize [
 	window root addEventHandler: (AnvilEventListener new 
 												model: model).
 	
-	model state: state.
 	view model: model.
 	state announcer when: AnvilStateChangedAnnouncement send: #stateChanged to: window.
 	"
@@ -73,17 +74,46 @@ AnvilGame >> model [
 	^ model
 ]
 
+{ #category : #'as yet unclassified' }
+AnvilGame >> reInitializeModel [
+	self flag: 'UNTESTED'.
+	"This function reinitializes the model"
+	state := AnvilState new.
+	model := SqModel new.
+	
+	model state: state.
+	view state: state.
+		
+	window root addEventHandler: (AnvilEventListener new 
+												model: model).
+	
+]
+
 { #category : #anvil }
 AnvilGame >> restartWindow [
-	self flag: 'TODO'.
-	self notYetImplemented.
+	window close. 
+	
+	view := SqView new state: state.
+	
+	window := AnvilWindow new 
+		extent: (self class resolution);
+		title: self title.
+	
+	window addChild: view.
+	
+	window root addEventHandler: (AnvilEventListener new 
+												model: model).
+	
+	state announcer when: AnvilStateChangedAnnouncement send: #stateChanged to: window.	
+	
+	self start.
 ]
 
 { #category : #anvil }
 AnvilGame >> start [
 	window show.
 	window
-		position: 760@18.
+		position: 860@18.
 ]
 
 { #category : #anvil }

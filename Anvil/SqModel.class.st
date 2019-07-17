@@ -44,7 +44,7 @@ Class {
 
 { #category : #shapes }
 SqModel class >> IShape [
-	^ { (-1.5)@(-0.5). (-0.5)@(-0.5). (0.5)@(-0.5). (1.5)@(-0.5) }
+	^ { (-1.5)@(-0.5). (-0.5)@(-0.5). (0.5)@(-0.5). (1.5)@(-0.5) } 
 ]
 
 { #category : #shapes }
@@ -93,10 +93,15 @@ SqModel class >> pointToPixel: aPoint [
 
 { #category : #utility }
 SqModel class >> quadrant: aQuadrant ToGlobal: aPoint [ 
-	"Convert a quadrant coordinate to global coordinates"
+	"Convert a quadrant coordinate to global coordinates. Quadrant coordinates divide the quadrant into positive and negative on the horizontal axis and the ring number count is used vertically"
+	aQuadrant = #Up ifTrue: [  ].
+	aQuadrant = #Down ifTrue: [  ].
+	aQuadrant = #Right ifTrue: [  ].
+	aQuadrant = #Left ifTrue: [  ].
+	
 ]
 
-{ #category : #shape }
+{ #category : #'add shape' }
 SqModel >> addNewShape [
 	| shape |
 	
@@ -106,13 +111,15 @@ SqModel >> addNewShape [
 	state at: #shapeLocation put: (self getShapeStartingLocation: shape)
 ]
 
-{ #category : #shape }
+{ #category : #'add shape' }
 SqModel >> canAcceptShape [
 	"Check if the shape collides with board cells, if so game over. Return either true or false"
 ]
 
 { #category : #'change quadrant' }
 SqModel >> changeQuadrant: aQuadrant [
+	self flag: 'TODO'.
+	state at: #levelOrientation put: aQuadrant.
 ]
 
 { #category : #ring }
@@ -145,7 +152,7 @@ SqModel >> exitDiagonal: aDirection [
 SqModel >> gameOver [
 ]
 
-{ #category : #shape }
+{ #category : #'add shape' }
 SqModel >> getShape: aSymbol [
 	aSymbol = #I ifTrue: [ ^ self class IShape ].
 	aSymbol = #J ifTrue: [ ^ self class JShape ].
@@ -156,21 +163,33 @@ SqModel >> getShape: aSymbol [
 	aSymbol = #Z ifTrue: [ ^ self class ZShape ].
 ]
 
-{ #category : #shape }
+{ #category : #'add shape' }
+SqModel >> getShapeBag [
+	"A shape bag is just a Dictionary. When we take a shape from it we mark that shape unusable. The shape bag consists of 28 elements"
+	"^ Dictionary new
+		at: 1 put: #IShape;
+		at: 2 put: #"
+	^ OrderedCollection newFrom: #(#I #J #L #O #S #T #Z #I #J #L #O #S #T #Z #I #J #L #O #S #T #Z #I #J #L #O #S #T #Z).
+]
+
+{ #category : #'add shape' }
 SqModel >> getShapeFromBag [
 	"From the #shapeBag get a random piece, if the bag is empty then make a new 
 	bag"
 	
-	| shape rand|
-	(state at: #shapeBag) size = 1 ifTrue: [ self makeShapeBag ].
-	rand := (state at: #shapeBag) size atRandom.
+	| shape rand generator |
+	generator := Random new seed: 1.
+	(state at: #shapeBag) size = 1 ifTrue: [ state at: #shapeBag put: self getShapeBag ].
+	rand := (state at: #shapeBag) size atRandom: generator.
 	shape := (state at: #shapeBag) at: rand.
 	state at: #shapeBag put: ((state at: #shapeBag) removeAt: rand).
 	^ shape.
 ]
 
-{ #category : #shape }
+{ #category : #'add shape' }
 SqModel >> getShapeStartingLocation: aShapeSymbol [
+	"Provides the starting location in quadrant coordinates"
+	(aShapeSymbol = #I or: aShapeSymbol = #O) ifTrue: [ ^ 14.5@0.5 ] ifFalse: [ ^ 14@0 ]
 ]
 
 { #category : #anvil }
@@ -186,7 +205,7 @@ SqModel >> initializeState [
 	"Shape"
 	state at: #shape put: nil. 
 	state at: #shapeType put: nil.
-	state at: #shapeBag put: nil.
+	state at: #shapeBag put: (self getShapeBag).
 	state at: #shapeLocation put: nil.
 	"Level"
 	state at: #levelSize put: 31. 
@@ -231,16 +250,6 @@ SqModel >> initializeStateMachine [
 
 { #category : #move }
 SqModel >> land [
-]
-
-{ #category : #shape }
-SqModel >> makeShapeBag [
-	self flag: 'TODO'.
-	"A shape bag is just a Dictionary. When we take a shape from it we mark that shape unusable. The shape bag consists of 28 elements"
-	"^ Dictionary new
-		at: 1 put: #IShape;
-		at: 2 put: #"
-	state at: #shapeBag put: (OrderedCollection newFrom: #(#I #J #L #O #S #T #Z #I #J #L #O #S #T #Z #I #J #L #O #S #T #Z #I #J #L #O #S #T #Z))
 ]
 
 { #category : #ring }
