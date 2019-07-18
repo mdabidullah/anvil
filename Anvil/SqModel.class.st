@@ -120,10 +120,13 @@ SqModel >> canAcceptShape [
 ]
 
 { #category : #'change quadrant' }
-SqModel >> changeQuadrant: aQuadrant [
+SqModel >> changeQuadrant: aDirection [
 	self flag: 'TODO'.
 	"state at: #levelOrientation put: aQuadrant."
-	Transcript show: 'changeQuadrant: ' , aQuadrant asString; cr
+	Transcript show: 'changeQuadrant: ' , aDirection asString; cr.
+	
+	"use the current orientation and translateOrientation: find the correct change"
+	self translateOrientation: aDirection
 ]
 
 { #category : #ring }
@@ -215,6 +218,7 @@ SqModel >> initializeState [
 	state at: #levelSize put: 31. 
 	state at: #offset put: 20@10.
 	state at: #levelOrientation put: #Up.
+	state at: #levelRotation put: 0.
 	state at: #level put: (Array2D rows: (state at: #levelSize)
 										   columns: (state at: #levelSize)).
 										
@@ -280,6 +284,18 @@ SqModel >> movePossible: aDirection [
 SqModel >> moveValid: aDirection [
 ]
 
+{ #category : #level }
+SqModel >> orientationRotation: aQuadrant [
+	"Return the degree of the orientation"
+	((Dictionary new
+		at: #Up put: 0;
+		at: #Down put: 90;
+		at: #Right put: 180;
+		at: #Left put: 270;
+								
+		yourself) at: (state at: #levelOrientation)) at: aQuadrant.
+]
+
 { #category : #ring }
 SqModel >> removeRing [
 ]
@@ -290,6 +306,11 @@ SqModel >> restartGame [
 
 { #category : #rotate }
 SqModel >> rotate [
+]
+
+{ #category : #level }
+SqModel >> rotateLevel: aQuadrant [
+	"rotate the level so that aQuadrant is top"
 ]
 
 { #category : #rotate }
@@ -310,7 +331,7 @@ SqModel >> step [
 	
 ]
 
-{ #category : #'change quadrant' }
+{ #category : #level }
 SqModel >> translateOrientation: aDirection [
 	"This message translates the direction in relation to the current orientation"
 	((Dictionary new
