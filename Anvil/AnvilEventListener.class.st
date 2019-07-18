@@ -19,7 +19,7 @@ AnvilEventListener >> keystrokeEvent: aEvent [
 		at: (Character arrowUp asInteger) put: [ model event: #Up ];
 		at: (Character space asInteger) put: [ model event: #Space ];
 		at: (Character cr asInteger) put: [ model event: #Enter ];
-		yourself) at: (aEvent char asInteger)) value.
+		yourself) at: (aEvent char asInteger) ifAbsent: [] ) value.
 ]
 
 { #category : #anvil }

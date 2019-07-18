@@ -106,6 +106,7 @@ SqModel >> addNewShape [
 	| shape |
 	
 	shape := self getShapeFromBag.
+	"shape := #I."
 	state at: #shape put: (self getShape: shape).
 	state at: #shapeType put: shape.
 	state at: #shapeLocation put: (self getShapeStartingLocation: shape)
@@ -114,12 +115,15 @@ SqModel >> addNewShape [
 { #category : #'add shape' }
 SqModel >> canAcceptShape [
 	"Check if the shape collides with board cells, if so game over. Return either true or false"
+	self flag: 'TODO'.
+	^ true.
 ]
 
 { #category : #'change quadrant' }
 SqModel >> changeQuadrant: aQuadrant [
 	self flag: 'TODO'.
-	state at: #levelOrientation put: aQuadrant.
+	"state at: #levelOrientation put: aQuadrant."
+	Transcript show: 'changeQuadrant: ' , aQuadrant asString; cr
 ]
 
 { #category : #ring }
@@ -189,7 +193,7 @@ SqModel >> getShapeFromBag [
 { #category : #'add shape' }
 SqModel >> getShapeStartingLocation: aShapeSymbol [
 	"Provides the starting location in quadrant coordinates"
-	(aShapeSymbol = #I or: aShapeSymbol = #O) ifTrue: [ ^ 14.5@0.5 ] ifFalse: [ ^ 14@0 ]
+	(aShapeSymbol = #I or: aShapeSymbol = #O) ifTrue: [ ^ 15.5@1.5 ] ifFalse: [ ^ 16@1 ]
 ]
 
 { #category : #anvil }

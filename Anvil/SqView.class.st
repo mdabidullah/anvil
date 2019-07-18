@@ -107,8 +107,8 @@ SqView >> drawShape: aCanvas [
 				"self halt. "
 				point := (state at: #shape) atWrap: i.
 				location := (state at: #shapeLocation). 
-				x := location x * 10 + location x + (point x * 10). 
-				y := location y * 10 + location y + (point y * 10).
+				x := location x * 11 + (point x * 11). 
+				y := location y * 11 + (point y * 11).
 				aCanvas fill
 					path: (aCanvas shape 
 						roundedRectangle: (Rectangle origin: (x)@(y) 
