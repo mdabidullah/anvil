@@ -9,13 +9,13 @@ ______
 #Shape Related#
 _______________
 
-#shapeLocations : an OrderedCollection containing Points, each point represents the location of a cell which makes up the shape
+#shape : an OrderedCollection containing Points, each point represents the location of a cell which makes up the shape in relation to the #shapeLocation
 
-#shapeMatrix : a Matrix, the matrix representation of the shape 
+#shapeType : a Symbol, representing the kind of shape.
 
-#matrixLocation : a Point, representing where the matrix is positioned. 
+#shapeBag : an OrderedCollection containing Symbols representing #shapeTypes, used for random shape picking
 
-#shapeRotation : a Number, representing the current rotation of the shape. 
+#shapeLocation : a Point, representing the origin of the shape. 
 
 #Level Related#
 _______________
@@ -83,28 +83,10 @@ SqModel class >> ZShape [
 		         0@0. 1@0 }
 ]
 
-{ #category : #utility }
-SqModel class >> pixelToPoint: aPoint [
-]
-
-{ #category : #utility }
-SqModel class >> pointToPixel: aPoint [
-]
-
-{ #category : #utility }
-SqModel class >> quadrant: aQuadrant ToGlobal: aPoint [ 
-	"Convert a quadrant coordinate to global coordinates. Quadrant coordinates divide the quadrant into positive and negative on the horizontal axis and the ring number count is used vertically"
-	aQuadrant = #Up ifTrue: [  ].
-	aQuadrant = #Down ifTrue: [  ].
-	aQuadrant = #Right ifTrue: [  ].
-	aQuadrant = #Left ifTrue: [  ].
-	
-]
-
 { #category : #'add shape' }
 SqModel >> addNewShape [
 	| shape |
-	
+	self flag: 'Check which quadrant the shape is being added to and rotate for that quadrant'.
 	shape := self getShapeFromBag.
 	"shape := #I."
 	state at: #shape put: (self getShape: shape).
@@ -119,14 +101,35 @@ SqModel >> canAcceptShape [
 	^ true.
 ]
 
+{ #category : #utility }
+SqModel >> centralToGlobal: aPoint [
+	| o origin |
+	o := (((state at: #levelSize) / 2.0) floor) + 1.
+	origin := o@o.
+	
+	^ (origin x + aPoint x) @ (origin y - aPoint y).
+	
+]
+
 { #category : #'change quadrant' }
-SqModel >> changeQuadrant: aDirection [
+SqModel >> changeQuadrant: aQuadrant [
+	| shape |
 	self flag: 'TODO'.
 	"state at: #levelOrientation put: aQuadrant."
-	Transcript show: 'changeQuadrant: ' , aDirection asString; cr.
+	Transcript show: 'changeQuadrant: ' , aQuadrant asString; cr. 
+	
+	"
+	1. Find what the rotated shape should be in new quadrant.
+	2. Find the location of the shape in new quadrant.
+	3. Rotate level
+	"
+	self rotateShapeForQuadrant: aQuadrant.
+	
+	"find the location of the shape in new quadrant"
+	self rotatePointToQuadrant: aQuadrant.
 	
 	"use the current orientation and translateOrientation: find the correct change"
-	self translateOrientation: aDirection
+	self rotateLevel: (self translateOrientation: aQuadrant).
 ]
 
 { #category : #ring }
@@ -197,6 +200,11 @@ SqModel >> getShapeFromBag [
 SqModel >> getShapeStartingLocation: aShapeSymbol [
 	"Provides the starting location in quadrant coordinates"
 	(aShapeSymbol = #I or: aShapeSymbol = #O) ifTrue: [ ^ 15.5@1.5 ] ifFalse: [ ^ 16@1 ]
+]
+
+{ #category : #utility }
+SqModel >> globalToCentral: aPoint [
+	
 ]
 
 { #category : #anvil }
@@ -296,6 +304,24 @@ SqModel >> orientationRotation: aQuadrant [
 		yourself) at: (state at: #levelOrientation)) at: aQuadrant.
 ]
 
+{ #category : #utility }
+SqModel >> pixelToPoint: aPoint [
+]
+
+{ #category : #utility }
+SqModel >> pointToPixel: aPoint [
+]
+
+{ #category : #utility }
+SqModel >> quadrant: aQuadrant toGlobal: aPoint [ 
+	"Convert a quadrant coordinate to global coordinates. Quadrant coordinates divide the quadrant into positive and negative on the horizontal axis and the ring number count is used vertically"
+	aQuadrant = #Up ifTrue: [  ].
+	aQuadrant = #Down ifTrue: [  ].
+	aQuadrant = #Right ifTrue: [  ].
+	aQuadrant = #Left ifTrue: [  ].
+	
+]
+
 { #category : #ring }
 SqModel >> removeRing [
 ]
@@ -308,9 +334,56 @@ SqModel >> restartGame [
 SqModel >> rotate [
 ]
 
+{ #category : #rotate }
+SqModel >> rotate: aDegree [ ": Integer, multiples of  90"
+	"rotate the shape by aDegree, do this by removing 90 from aDegree until 0 degree is reached."
+	| shape degree |
+	degree := aDegree.
+	shape := (state at: #shape) copy.
+	[ degree >= 90 ] whileTrue: [ 
+		1 to: 4 do: [ :i |
+			| point newPoint |
+			point := (state at: #shape) atWrap: i.
+			newPoint := point y negate @ point x.
+			shape atWrap: i put: newPoint.
+			].
+		degree := aDegree - 90.
+		].
+	^ shape
+]
+
+{ #category : #rotate }
+SqModel >> rotate: aDegree ": Integer, multiples of  90" shape: aShape [ ": the shape to be rotated"
+	"rotate the shape by aDegree, do this by removing 90 from aDegree until 0 degree is reached."
+	| shape degree |
+	degree := aDegree.
+	shape := aShape copy.
+	[ degree >= 90 ] whileTrue: [ 
+		1 to: 4 do: [ :i |
+			| point newPoint |
+			point := shape atWrap: i.
+			newPoint := point y negated @ point x.
+			shape atWrap: i put: newPoint.
+			].
+		degree := degree - 90.
+		].
+	^ shape
+]
+
 { #category : #level }
 SqModel >> rotateLevel: aQuadrant [
 	"rotate the level so that aQuadrant is top"
+]
+
+{ #category : #'change quadrant' }
+SqModel >> rotatePointToQuadrant: aQuadrant [
+	| point |
+	point := state at: #shapeLocation.
+	^ (point y negate)@(point x).
+]
+
+{ #category : #'change quadrant' }
+SqModel >> rotateShapeForQuadrant: aQuadrant. [
 ]
 
 { #category : #rotate }

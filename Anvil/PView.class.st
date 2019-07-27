@@ -29,3 +29,15 @@ PView >> drawOnSpartaCanvas: aCanvas [
 		
 	aCanvas transform pop.
 ]
+
+{ #category : #anvil }
+PView >> initialize [
+	super initialize.
+
+	self size: AnvilGame resolution.
+	
+	SystemAnnouncer uniqueInstance when: MethodModified do: [ :methodModified | methodModified method selector == #drawOnSpartaCanvas: ifTrue: self update ].
+	
+	self enqueueTask: (BlRepeatedTaskAction new delay: 100 milliSeconds; 
+															 action: [ self step ]).
+]
