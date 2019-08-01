@@ -24,7 +24,9 @@ _______________
 
 #offset : a Number, which is the drawing point of the level.
 
-#levelOrientation : a Number that keeps track of the orientation of the cell. 
+#levelOrientation : a Symbol, that keeps track of the orientation of the cell.
+
+#levelRotation : a Number that keeps track of the rotation of the cell. 
 
 #level : an Array2D, containing the level state, the placed cells. 
 
@@ -85,13 +87,15 @@ SqModel class >> ZShape [
 
 { #category : #'add shape' }
 SqModel >> addNewShape [
-	| shape |
+	| shapeSymbol |
 	self flag: 'Check which quadrant the shape is being added to and rotate for that quadrant'.
-	shape := self getShapeFromBag.
+	shapeSymbol := self getShapeFromBag.
 	"shape := #I."
-	state at: #shape put: (self getShape: shape).
-	state at: #shapeType put: shape.
-	state at: #shapeLocation put: (self getShapeStartingLocation: shape)
+	state at: #shape put: (self rotateShape: shapeSymbol 
+										forQuadrant: (state at: #levelOrientation)).
+	state at: #shapeType put: shapeSymbol.
+	state at: #shapeLocation put: 
+		(self getShapeStartingLocation: shapeSymbol forQuadrant: (state at: #levelOrientation)).
 ]
 
 { #category : #'add shape' }
@@ -111,25 +115,21 @@ SqModel >> centralToGlobal: aPoint [
 	
 ]
 
-{ #category : #'change quadrant' }
+{ #category : #'add shape' }
 SqModel >> changeQuadrant: aQuadrant [
-	| shape |
-	self flag: 'TODO'.
 	"state at: #levelOrientation put: aQuadrant."
 	Transcript show: 'changeQuadrant: ' , aQuadrant asString; cr. 
 	
 	"
 	1. Find what the rotated shape should be in new quadrant.
 	2. Find the location of the shape in new quadrant.
-	3. Rotate level
 	"
-	self rotateShapeForQuadrant: aQuadrant.
+	state at: #shape put: (self rotateShape: (state at: #shapeType) forQuadrant: aQuadrant).
 	
 	"find the location of the shape in new quadrant"
-	self rotatePointToQuadrant: aQuadrant.
+	state at: #shapeLocation put: (self rotatePointToQuadrant: aQuadrant).
+	state stateChanged.
 	
-	"use the current orientation and translateOrientation: find the correct change"
-	self rotateLevel: (self translateOrientation: aQuadrant).
 ]
 
 { #category : #ring }
@@ -197,14 +197,23 @@ SqModel >> getShapeFromBag [
 ]
 
 { #category : #'add shape' }
-SqModel >> getShapeStartingLocation: aShapeSymbol [
-	"Provides the starting location in quadrant coordinates"
-	(aShapeSymbol = #I or: aShapeSymbol = #O) ifTrue: [ ^ 15.5@1.5 ] ifFalse: [ ^ 16@1 ]
+SqModel >> getShapeStartingLocation: aShapeSymbol forQuadrant: aQuadrant [
+	"Provides the starting location in global coordinates"
+	| point |
+	(aShapeSymbol = #I or: aShapeSymbol = #O) ifTrue: [ point := 0.5@15.5 ] ifFalse: [ point := 0@15 ].
+	
+	aQuadrant = #Up ifTrue: [ ^ self centralToGlobal: point ].
+	aQuadrant = #Right ifTrue: [ ^ self centralToGlobal: (self rotate: 90 point: point) ].
+	aQuadrant = #Down ifTrue: [ ^ self centralToGlobal: (self rotate: 180 point: point) ].
+	aQuadrant = #Left ifTrue: [ ^ self centralToGlobal: (self rotate: 270 point: point) ].
 ]
 
 { #category : #utility }
 SqModel >> globalToCentral: aPoint [
-	
+	| o origin |
+	o := (((state at: #levelSize) / 2.0) floor) + 1.
+	origin := o@o.
+	^ (o - aPoint x) negated @ (o - aPoint y)
 ]
 
 { #category : #anvil }
@@ -313,6 +322,16 @@ SqModel >> pointToPixel: aPoint [
 ]
 
 { #category : #utility }
+SqModel >> quadrant: aQuadrant toCentral: aQuadrantPoint [ 
+	"Convert a quadrant coordinate to global coordinates. Quadrant coordinates divide the quadrant into positive and negative on the horizontal axis and the ring number count is used vertically"
+	aQuadrant = #Up ifTrue: [ ^ aQuadrantPoint ].
+	aQuadrant = #Down ifTrue: [  ].
+	aQuadrant = #Right ifTrue: [  ].
+	aQuadrant = #Left ifTrue: [  ].
+	
+]
+
+{ #category : #utility }
 SqModel >> quadrant: aQuadrant toGlobal: aPoint [ 
 	"Convert a quadrant coordinate to global coordinates. Quadrant coordinates divide the quadrant into positive and negative on the horizontal axis and the ring number count is used vertically"
 	aQuadrant = #Up ifTrue: [  ].
@@ -352,6 +371,19 @@ SqModel >> rotate: aDegree [ ": Integer, multiples of  90"
 	^ shape
 ]
 
+{ #category : #utility }
+SqModel >> rotate: aDegree point: aPoint [
+	"point must be in central coordinates"
+	| point degree |
+	degree := aDegree.
+	point := aPoint copy.
+	[ degree >= 90 ] whileTrue: [ 
+		point := point y @ point x negated.
+		degree := degree - 90.
+		].
+	^ point
+]
+
 { #category : #rotate }
 SqModel >> rotate: aDegree ": Integer, multiples of  90" shape: aShape [ ": the shape to be rotated"
 	"rotate the shape by aDegree, do this by removing 90 from aDegree until 0 degree is reached."
@@ -375,15 +407,56 @@ SqModel >> rotateLevel: aQuadrant [
 	"rotate the level so that aQuadrant is top"
 ]
 
-{ #category : #'change quadrant' }
-SqModel >> rotatePointToQuadrant: aQuadrant [
-	| point |
+{ #category : #'add shape' }
+SqModel >> rotatePoint: aPoint toQuadrant: aQuadrant [
+	
+	| point degree |
+	
 	point := state at: #shapeLocation.
-	^ (point y negate)@(point x).
+	^ (point y negated)@(point x).
+	
+	
 ]
 
-{ #category : #'change quadrant' }
-SqModel >> rotateShapeForQuadrant: aQuadrant. [
+{ #category : #'add shape' }
+SqModel >> rotatePointToQuadrant: aQuadrant [
+	
+	| point orientation |
+	
+	point := self globalToCentral: (self getShapeStartingLocation: (state at: #shapeType) forQuadrant: aQuadrant).
+	
+	orientation := state at: #levelOrientation.
+	
+	orientation == #Up ifTrue: [ ^ self centralToGlobal: point  ].
+	
+	orientation == #Right ifTrue: [ ^ self centralToGlobal: (self rotate: 90 point: point) ].
+	
+	orientation == #Down ifTrue: [ ^ self centralToGlobal: (self rotate: 180 point: point) ].
+	
+	orientation == #Left ifTrue: [ ^ self centralToGlobal: (self rotate: 270 point: point) ].
+	
+	
+]
+
+{ #category : #'add shape' }
+SqModel >> rotateShape: aShapeSymbol forQuadrant: aQuadrant [
+	| shape |
+	
+	shape := self getShape: aShapeSymbol.
+	
+	"aQuadrant == #Up ifTrue: [  ]."
+
+	aQuadrant == #Right ifTrue: [ 
+		shape := self rotate: 90 shape: shape ].
+	
+	aQuadrant == #Down ifTrue: [ 
+		shape := self rotate: 180 shape: shape ].
+	
+	aQuadrant == #Left ifTrue: [ 
+		shape := self rotate: 270 shape: shape ].
+	
+	^ shape
+	
 ]
 
 { #category : #rotate }
