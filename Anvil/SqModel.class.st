@@ -9,13 +9,15 @@ ______
 #Shape Related#
 _______________
 
-#shape : an OrderedCollection containing Points, each point represents the location of a cell which makes up the shape in relation to the #shapeLocation
+#shape : an Array containing Points, each point represents the location of a cell which makes up the shape in relation to the #shapeLocation
 
 #shapeType : a Symbol, representing the kind of shape.
 
 #shapeBag : an OrderedCollection containing Symbols representing #shapeTypes, used for random shape picking
 
 #shapeLocation : a Point, representing the origin of the shape. 
+
+#shapeCoordinates : an Array, containing the cell coordinates the shape is occupying in the level.
 
 #Level Related#
 _______________
@@ -86,9 +88,12 @@ SqModel class >> ZShape [
 ]
 
 { #category : #'add shape' }
+SqModel >> acceptShape [
+]
+
+{ #category : #'add shape' }
 SqModel >> addNewShape [
 	| shapeSymbol |
-	self flag: 'Check which quadrant the shape is being added to and rotate for that quadrant'.
 	shapeSymbol := self getShapeFromBag.
 	"shape := #I."
 	state at: #shape put: (self rotateShape: shapeSymbol 
@@ -96,12 +101,15 @@ SqModel >> addNewShape [
 	state at: #shapeType put: shapeSymbol.
 	state at: #shapeLocation put: 
 		(self getShapeStartingLocation: shapeSymbol forQuadrant: (state at: #levelOrientation)).
+		
+	state at: #shapeCoordinates put: (self getActiveShapeCellCoordinates).
 ]
 
 { #category : #'add shape' }
 SqModel >> canAcceptShape [
-	"Check if the shape collides with board cells, if so game over. Return either true or false"
+	"Check if the shape collides with placed cells, if so game over. Return either true or false. If true rotate level to match"
 	self flag: 'TODO'.
+	Transcript show: 'Accept Shape'; cr.
 	^ true.
 ]
 
@@ -116,14 +124,7 @@ SqModel >> centralToGlobal: aPoint [
 ]
 
 { #category : #'add shape' }
-SqModel >> changeQuadrant: aQuadrant [
-	"state at: #levelOrientation put: aQuadrant."
-	Transcript show: 'changeQuadrant: ' , aQuadrant asString; cr. 
-	
-	"
-	1. Find what the rotated shape should be in new quadrant.
-	2. Find the location of the shape in new quadrant.
-	"
+SqModel >> changeQuadrant: aQuadrant [	
 	state at: #shape put: (self rotateShape: (state at: #shapeType) forQuadrant: aQuadrant).
 	
 	"find the location of the shape in new quadrant"
@@ -160,6 +161,19 @@ SqModel >> exitDiagonal: aDirection [
 
 { #category : #anvil }
 SqModel >> gameOver [
+]
+
+{ #category : #level }
+SqModel >> getActiveShapeCellCoordinates [
+	"Returns the coordinates of the cells the shape is currently occupying in global coordinates"
+	| array |
+	array := { 0@0. 0@0. 0@0. 0@0 }.
+	1 to: 4 do: [ :i |
+		| |
+		array at: i put: (state at: #shapeLocation) + ((state at: #shape) atWrap: i).
+		 ].
+	
+	^ array.
 ]
 
 { #category : #'add shape' }
@@ -200,7 +214,7 @@ SqModel >> getShapeFromBag [
 SqModel >> getShapeStartingLocation: aShapeSymbol forQuadrant: aQuadrant [
 	"Provides the starting location in global coordinates"
 	| point |
-	(aShapeSymbol = #I or: aShapeSymbol = #O) ifTrue: [ point := 0.5@15.5 ] ifFalse: [ point := 0@15 ].
+	(aShapeSymbol = #I or: aShapeSymbol = #O) ifTrue: [ point := 0.5@14.5 ] ifFalse: [ point := 0@14 ].
 	
 	aQuadrant = #Up ifTrue: [ ^ self centralToGlobal: point ].
 	aQuadrant = #Right ifTrue: [ ^ self centralToGlobal: (self rotate: 90 point: point) ].
@@ -231,6 +245,7 @@ SqModel >> initializeState [
 	state at: #shapeType put: nil.
 	state at: #shapeBag put: (self getShapeBag).
 	state at: #shapeLocation put: nil.
+	state at: #shapeCoordinates put: nil.
 	"Level"
 	state at: #levelSize put: 31. 
 	state at: #offset put: 20@10.
@@ -273,6 +288,10 @@ SqModel >> initializeStateMachine [
 	stateMachine setStartStateTo: #ChooseQuadrant.
 ]
 
+{ #category : #utility }
+SqModel >> isShapeMovingUp: aDirection [
+]
+
 { #category : #move }
 SqModel >> land [
 ]
@@ -299,6 +318,18 @@ SqModel >> movePossible: aDirection [
 
 { #category : #move }
 SqModel >> moveValid: aDirection [
+	"Check if this move is valid, the shape should not move up a ring or move out of the level"
+	| valid coordinates |
+	(self isShapeMovingUp: aDirection) ifTrue: [ ^ false ].
+	
+	1 to: 4 do: [ :i |
+		| newPoint|
+		newPoint := ((state at: #shapeCoordinates) atWrap: i) + (self translateDirection: (self translateAction: aDirection)).
+		(newPoint x > 0 and: [newPoint y > 0 and: [newPoint x <= (state at: #levelSize) and: [newPoint y <= (state at: #levelSize)]]])
+			ifFalse: [ ^ false ]. 
+		].
+	
+	^ true.
 ]
 
 { #category : #level }
@@ -477,34 +508,41 @@ SqModel >> step [
 	
 ]
 
-{ #category : #level }
-SqModel >> translateOrientation: aDirection [
-	"This message translates the direction in relation to the current orientation"
-	((Dictionary new
+{ #category : #utility }
+SqModel >> translateAction: aDirection [
+	^ ((Dictionary new
 		at: #Up put: (Dictionary new 
-								at: #Up put: #Up;
-								at: #Down put: #Down;
-								at: #Right put: #Right;
-								at: #Left put: #Left;
-								yourself);
-		at: #Down put: (Dictionary new 
-								at: #Up put: #Down;
-								at: #Down put: #Up;
-								at: #Right put: #Left;
-								at: #Left put: #Right;
-								yourself);
+			at: #Up put: #Up;
+			at: #Right put: #Right; 
+			at: #Down put: #Down;
+			at: #Left put: #Left;
+			yourself);
 		at: #Right put: (Dictionary new 
-								at: #Up put: #Right;
-								at: #Down put: #Left;
-								at: #Right put: #Down;
-								at: #Left put: #Up;
-								yourself);
+			at: #Up put: #Right;
+			at: #Right put: #Down; 
+			at: #Down put: #Left;
+			at: #Left put: #Up;
+			yourself);
+		at: #Down put: (Dictionary new 
+			at: #Up put: #Down;
+			at: #Right put: #Left; 
+			at: #Down put: #Up;
+			at: #Left put: #Right;
+			yourself);
 		at: #Left put: (Dictionary new 
-								at: #Up put: #Left;
-								at: #Down put: #Right;
-								at: #Right put: #up;
-								at: #Left put: #Down;
-								yourself);
-								
-		yourself) at: (state at: #levelOrientation)) at: aDirection.
+			at: #Up put: #Left;
+			at: #Right put: #Up; 
+			at: #Down put: #Right;
+			at: #Left put: #Down;
+			yourself);
+		yourself) at: (state at: #levelOrientation)) at: aDirection
+]
+
+{ #category : #utility }
+SqModel >> translateDirection: aDirectionSymbol [
+	aDirectionSymbol == #Up ifTrue: [ ^ 0@(-1)  ].
+	aDirectionSymbol == #Right ifTrue: [ ^ 1@0 ].
+	aDirectionSymbol == #Down ifTrue: [ ^ 0@1 ].
+	aDirectionSymbol == #Left ifTrue: [ ^ (-1)@0 ].
+				
 ]
