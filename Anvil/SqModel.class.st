@@ -133,6 +133,10 @@ SqModel >> changeQuadrant: aQuadrant [
 	
 ]
 
+{ #category : #move }
+SqModel >> changeShapeLocation: aPoint withCoordinates: aCoordinateArray [
+]
+
 { #category : #ring }
 SqModel >> checkForRing [
 ]
@@ -159,6 +163,14 @@ SqModel >> event: aEvent [
 SqModel >> exitDiagonal: aDirection [
 ]
 
+{ #category : #utility }
+SqModel >> fallingDirection: aQuadrant [
+	aQuadrant = #Up ifTrue: [ ^ #Down ].
+	aQuadrant = #Down ifTrue: [ ^ #Up ].
+	aQuadrant = #Left ifTrue: [ ^ #Right ].
+	aQuadrant = #Right ifTrue: [ ^ #Left ].
+]
+
 { #category : #anvil }
 SqModel >> gameOver [
 ]
@@ -174,6 +186,15 @@ SqModel >> getActiveShapeCellCoordinates [
 		 ].
 	
 	^ array.
+]
+
+{ #category : #utility }
+SqModel >> getDirectionVector: aDirectionSymbol [
+	aDirectionSymbol == #Up ifTrue: [ ^ 0@(-1)  ].
+	aDirectionSymbol == #Right ifTrue: [ ^ 1@0 ].
+	aDirectionSymbol == #Down ifTrue: [ ^ 0@1 ].
+	aDirectionSymbol == #Left ifTrue: [ ^ (-1)@0 ].
+				
 ]
 
 { #category : #'add shape' }
@@ -284,11 +305,18 @@ SqModel >> initializeStateMachine [
 		when: #Down do: [ self changeQuadrant: #Down ] to: #ChooseQuadrant;
 		when: #Left do: [ self changeQuadrant: #Left ] to: #ChooseQuadrant;
 		when: #Right do: [ self changeQuadrant: #Right ] to: #ChooseQuadrant.
+		
+	(stateMachine stateAt: #InQuadrant)
+		when: #Up do: [ self move: #Up ] to: #InQuadrant;
+		when: #Down do: [ self move: #Down ] to: #InQuadrant;
+		when: #Right do: [ self move: #Right ] to: #InQuadrant;
+		when: #Left do: [ self move: #Left ] to: #InQuadrant;
+		when: #Space do: [ self rotate ] to: #InQuadrant.
 
 	stateMachine setStartStateTo: #ChooseQuadrant.
 ]
 
-{ #category : #utility }
+{ #category : #move }
 SqModel >> isShapeMovingUp: aDirection [
 ]
 
@@ -302,6 +330,36 @@ SqModel >> manageCascade [
 
 { #category : #move }
 SqModel >> move: aDirection [
+	| newCoordinates fallingDirection newLocation movePossible directionVector 
+	  currentQuadrant |
+	"Check if this move is valid, the shape should not move up a ring or move out of the level"
+	(aDirection == #Up) ifTrue: [ ^ self ].
+	newCoordinates := { 0@0. 0@0. 0@0. 0@0. }.
+	directionVector := self getDirectionVector: (self translateAction: aDirection).
+	"Check if move is valid"
+	1 to: 4 do: [ :i |
+		| newPoint|
+		newPoint := ((state at: #shapeCoordinates) atWrap: i) + directionVector.
+		(newPoint x > 0 and: [newPoint y > 0 and: [newPoint x <= (state at: #levelSize) and: [newPoint y <= (state at: #levelSize)]]])
+			ifFalse: [ ^ self ]. 
+		newCoordinates atWrap: i put: newPoint
+		].
+	
+	movePossible := true.
+	currentQuadrant := self quadrant: ((state at: #shapeCoordinates) atWrap: 1). 
+	newLocation := (state at: #shapeLocation) + directionVector.
+	fallingDirection := self fallingDirection: currentQuadrant.
+	
+	1 to: 4 do: [ :i |
+		| newQuadrant |
+		newQuadrant := self quadrant: (newCoordinates atWrap: i).
+		
+		newQuadrant = #Diagonal ifTrue: [ 
+			 ]
+		
+		 ].
+	
+	
 ]
 
 { #category : #diagonal }
@@ -324,7 +382,7 @@ SqModel >> moveValid: aDirection [
 	
 	1 to: 4 do: [ :i |
 		| newPoint|
-		newPoint := ((state at: #shapeCoordinates) atWrap: i) + (self translateDirection: (self translateAction: aDirection)).
+		newPoint := ((state at: #shapeCoordinates) atWrap: i) + (self getDirectionVector: (self translateAction: aDirection)).
 		(newPoint x > 0 and: [newPoint y > 0 and: [newPoint x <= (state at: #levelSize) and: [newPoint y <= (state at: #levelSize)]]])
 			ifFalse: [ ^ false ]. 
 		].
@@ -350,6 +408,45 @@ SqModel >> pixelToPoint: aPoint [
 
 { #category : #utility }
 SqModel >> pointToPixel: aPoint [
+]
+
+{ #category : #utility }
+SqModel >> quadrant: aGlobalPoint [
+	| point levelSize centerPoints |
+	point := self globalToCentral: aGlobalPoint.
+	levelSize := ((state at: #levelSize) / 2.0) floor.
+	(point x > levelSize or: [ 
+		point y > levelSize or: [ 
+		point x < (levelSize negated) or: [ 
+		point y < (levelSize negated) ] ] ])
+		ifTrue: [ Transcript show: 'Point out of bounds. Point is: '; show: point; cr.
+			self halt. 
+			^ self ].
+	centerPoints := OrderedCollection newFrom: 
+								  { (-1)@1.    0@1.    1@1.
+									 (-1)@0.    0@0.    1@0.
+									 (-1)@(-1). 0@(-1). 1@(-1). }.
+
+									
+	(centerPoints contains: [ :aPoint | aPoint = point]) ifTrue: [ ^ #Center ].
+	
+	point y abs = point x abs ifTrue: [ ^ #Diagonal ].
+	
+	(point y > 0 and: [ point x >= (point y - 1) negated and: [ 
+		point x <= (point y - 1) ] ]) ifTrue: [ ^ #Up ].
+	
+	(point y < 0 and: [ point x >= (point y abs - 1) negated and: [ 
+		point x <= (point y abs - 1) ] ]) ifTrue: [ ^ #Down ]. 
+
+	(point x > 0 and: [ point y >= (point x - 1) negated and: [ 
+		point y <= (point x - 1) ] ]) ifTrue: [ ^ #Right ].
+	
+	(point x < 0 and: [ point y >= (point x abs - 1) negated and: [  
+		 point y <= (point x abs - 1)] ]) ifTrue: [ ^ #Left ].
+	
+	Transcript show: 'Some kind of error. Point was: '; show: point; cr.
+	
+	self halt.
 ]
 
 { #category : #utility }
@@ -536,13 +633,4 @@ SqModel >> translateAction: aDirection [
 			at: #Left put: #Down;
 			yourself);
 		yourself) at: (state at: #levelOrientation)) at: aDirection
-]
-
-{ #category : #utility }
-SqModel >> translateDirection: aDirectionSymbol [
-	aDirectionSymbol == #Up ifTrue: [ ^ 0@(-1)  ].
-	aDirectionSymbol == #Right ifTrue: [ ^ 1@0 ].
-	aDirectionSymbol == #Down ifTrue: [ ^ 0@1 ].
-	aDirectionSymbol == #Left ifTrue: [ ^ (-1)@0 ].
-				
 ]
