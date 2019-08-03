@@ -88,10 +88,6 @@ SqModel class >> ZShape [
 ]
 
 { #category : #'add shape' }
-SqModel >> acceptShape [
-]
-
-{ #category : #'add shape' }
 SqModel >> addNewShape [
 	| shapeSymbol |
 	shapeSymbol := self getShapeFromBag.
@@ -135,6 +131,11 @@ SqModel >> changeQuadrant: aQuadrant [
 
 { #category : #move }
 SqModel >> changeShapeLocation: aPoint withCoordinates: aCoordinateArray [
+	state at: #shapeLocation put: aPoint.
+		
+	state at: #shapeCoordinates put: aCoordinateArray.
+	
+	state stateChanged.
 ]
 
 { #category : #ring }
@@ -145,12 +146,9 @@ SqModel >> checkForRing [
 SqModel >> checkForRings [
 ]
 
-{ #category : #move }
-SqModel >> drop [
-]
-
 { #category : #diagonal }
 SqModel >> enterDiagonal: aDirection [
+	self flag: 'TODO'.
 ]
 
 { #category : #anvil }
@@ -316,12 +314,11 @@ SqModel >> initializeStateMachine [
 	stateMachine setStartStateTo: #ChooseQuadrant.
 ]
 
-{ #category : #move }
-SqModel >> isShapeMovingUp: aDirection [
-]
-
-{ #category : #move }
-SqModel >> land [
+{ #category : #level }
+SqModel >> isOccupied: aPoint [
+	"Answer if this point is occupied in the level"
+	self flag: 'TODO'.
+	^ false.
 ]
 
 { #category : #ring }
@@ -330,12 +327,16 @@ SqModel >> manageCascade [
 
 { #category : #move }
 SqModel >> move: aDirection [
-	| newCoordinates fallingDirection newLocation movePossible directionVector 
+	| newCoordinates translatedDirection fallingDirection newLocation movePossible directionVector 
 	  currentQuadrant |
+	
+	Transcript show: 'move: '; show: aDirection; cr.
+	
 	"Check if this move is valid, the shape should not move up a ring or move out of the level"
 	(aDirection == #Up) ifTrue: [ ^ self ].
 	newCoordinates := { 0@0. 0@0. 0@0. 0@0. }.
-	directionVector := self getDirectionVector: (self translateAction: aDirection).
+	translatedDirection := self translateAction: aDirection.
+	directionVector := self getDirectionVector: translatedDirection.
 	"Check if move is valid"
 	1 to: 4 do: [ :i |
 		| newPoint|
@@ -355,9 +356,27 @@ SqModel >> move: aDirection [
 		newQuadrant := self quadrant: (newCoordinates atWrap: i).
 		
 		newQuadrant = #Diagonal ifTrue: [ 
-			 ]
+			translatedDirection = fallingDirection 
+				ifFalse: [ 
+					Transcript show: 'Trying to move into a diagonal'; cr.
+					self enterDiagonal: translatedDirection. ]
+				ifTrue: [ 
+					Transcript show: 'Dropping onto a diagonal'.
+					self stopShape.
+					].
+			^ self. 
+		].
+		(self isOccupied: (newCoordinates atWrap: i)) ifTrue: [
+			translatedDirection = fallingDirection ifTrue: [ 
+				Transcript show: 'Moving in dropping direction'; cr.
+				self stopShape.
+				^ self.
+			].
+		].
 		
-		 ].
+		"It must be possible to move"
+		self changeShapeLocation: newLocation withCoordinates: newCoordinates.
+	].
 	
 	
 ]
@@ -370,36 +389,15 @@ SqModel >> moveDownDiagonal [
 SqModel >> moveInDiagonal: aDirection [
 ]
 
-{ #category : #move }
-SqModel >> movePossible: aDirection [
-]
-
-{ #category : #move }
-SqModel >> moveValid: aDirection [
-	"Check if this move is valid, the shape should not move up a ring or move out of the level"
-	| valid coordinates |
-	(self isShapeMovingUp: aDirection) ifTrue: [ ^ false ].
-	
-	1 to: 4 do: [ :i |
-		| newPoint|
-		newPoint := ((state at: #shapeCoordinates) atWrap: i) + (self getDirectionVector: (self translateAction: aDirection)).
-		(newPoint x > 0 and: [newPoint y > 0 and: [newPoint x <= (state at: #levelSize) and: [newPoint y <= (state at: #levelSize)]]])
-			ifFalse: [ ^ false ]. 
-		].
-	
-	^ true.
-]
-
 { #category : #level }
 SqModel >> orientationRotation: aQuadrant [
 	"Return the degree of the orientation"
-	((Dictionary new
+	^ (Dictionary new
 		at: #Up put: 0;
-		at: #Down put: 90;
-		at: #Right put: 180;
+		at: #Right put: 90;
+		at: #Down put: 180;
 		at: #Left put: 270;
-								
-		yourself) at: (state at: #levelOrientation)) at: aQuadrant.
+		yourself) at: aQuadrant.
 ]
 
 { #category : #utility }
@@ -533,6 +531,10 @@ SqModel >> rotate: aDegree ": Integer, multiples of  90" shape: aShape [ ": the 
 { #category : #level }
 SqModel >> rotateLevel: aQuadrant [
 	"rotate the level so that aQuadrant is top"
+	self flag: 'TODO'.
+	state at: #levelOrientation put: aQuadrant.
+	state at: #levelRotation put: (self orientationRotation: aQuadrant).
+	state stateChanged.
 ]
 
 { #category : #'add shape' }
@@ -603,6 +605,11 @@ SqModel >> startGame [
 { #category : #anvil }
 SqModel >> step [
 	
+]
+
+{ #category : #shape }
+SqModel >> stopShape [
+	self flag: 'TODO'.
 ]
 
 { #category : #utility }

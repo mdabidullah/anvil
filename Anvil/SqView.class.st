@@ -28,7 +28,7 @@ SqView >> drawBackground: aCanvas [
 	"draw level background"
 	aCanvas transform 
 		by: [ :aTransform | aTransform
-			rotateByDegrees: 0;
+			rotateByDegrees: (state at: #levelRotation);
 			translateBy: (-180)@(-180)]
 		during: [ 
 			1 to: (state at: #levelSize) do: [ :x |
