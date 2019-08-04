@@ -90,8 +90,8 @@ SqModel class >> ZShape [
 { #category : #'add shape' }
 SqModel >> addNewShape [
 	| shapeSymbol |
-	shapeSymbol := self getShapeFromBag.
-	"shape := #I."
+	"shapeSymbol := self getShapeFromBag."
+	shapeSymbol := #Z.
 	state at: #shape put: (self rotateShape: shapeSymbol 
 										forQuadrant: (state at: #levelOrientation)).
 	state at: #shapeType put: shapeSymbol.
@@ -112,7 +112,7 @@ SqModel >> canAcceptShape [
 { #category : #utility }
 SqModel >> centralToGlobal: aPoint [
 	| o origin |
-	o := (((state at: #levelSize) / 2.0) floor) + 1.
+	o := (((state at: #levelSize) / 2.0) floor).
 	origin := o@o.
 	
 	^ (origin x + aPoint x) @ (origin y - aPoint y).
@@ -120,11 +120,12 @@ SqModel >> centralToGlobal: aPoint [
 ]
 
 { #category : #'add shape' }
-SqModel >> changeQuadrant: aQuadrant [	
+SqModel >> changeQuadrant: aQuadrant [
 	state at: #shape put: (self rotateShape: (state at: #shapeType) forQuadrant: aQuadrant).
 	
 	"find the location of the shape in new quadrant"
 	state at: #shapeLocation put: (self rotatePointToQuadrant: aQuadrant).
+	state at: #shapeCoordinates put: (self getActiveShapeCellCoordinates).
 	state stateChanged.
 	
 ]
@@ -233,7 +234,7 @@ SqModel >> getShapeFromBag [
 SqModel >> getShapeStartingLocation: aShapeSymbol forQuadrant: aQuadrant [
 	"Provides the starting location in global coordinates"
 	| point |
-	(aShapeSymbol = #I or: aShapeSymbol = #O) ifTrue: [ point := 0.5@14.5 ] ifFalse: [ point := 0@14 ].
+	(aShapeSymbol = #I or: aShapeSymbol = #O) ifTrue: [ point := 0.5@14.5 ] ifFalse: [ point := 0@15 ].
 	
 	aQuadrant = #Up ifTrue: [ ^ self centralToGlobal: point ].
 	aQuadrant = #Right ifTrue: [ ^ self centralToGlobal: (self rotate: 90 point: point) ].
@@ -244,7 +245,7 @@ SqModel >> getShapeStartingLocation: aShapeSymbol forQuadrant: aQuadrant [
 { #category : #utility }
 SqModel >> globalToCentral: aPoint [
 	| o origin |
-	o := (((state at: #levelSize) / 2.0) floor) + 1.
+	o := (((state at: #levelSize) / 2.0) floor).
 	origin := o@o.
 	^ (o - aPoint x) negated @ (o - aPoint y)
 ]

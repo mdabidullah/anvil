@@ -16,7 +16,7 @@ SqView >> canvas [
 SqView >> drawBackground: aCanvas [
 	| aFont |
 	aFont := aCanvas font 
-					size: 10;
+					size: 12;
 					weightThin;
 					sansSerif;
 					build.
@@ -29,10 +29,17 @@ SqView >> drawBackground: aCanvas [
 	aCanvas transform 
 		by: [ :aTransform | aTransform
 			rotateByDegrees: (state at: #levelRotation);
-			translateBy: (-180)@(-180)]
+			translateBy: (-170)@(-170)]
 		during: [ 
-			1 to: (state at: #levelSize) do: [ :x |
-				1 to: (state at: #levelSize) do: [ :y | 
+			aCanvas fill
+						path: (aCanvas shape 
+									roundedRectangle: (Rectangle origin: 0@0 
+																		 extent: 10@10)
+						   			radii:(BlCornerRadii radius: 2) );
+						paint: (Color blue);
+						draw.
+			0 to: ((state at: #levelSize) - 1) do: [ :x |
+				0 to: ((state at: #levelSize) - 1) do: [ :y | 
 					aCanvas fill
 						path: (aCanvas shape 
 									roundedRectangle: (Rectangle origin: ((x*11)@(y*11)) 
@@ -42,7 +49,7 @@ SqView >> drawBackground: aCanvas [
 						draw.
 				] 
 			].
-			1 to: (state at: #levelSize) do: [ :i | 
+			0 to: ((state at: #levelSize) - 1) do: [ :i | 
 				aCanvas fill
 					path: (aCanvas shape 
 								roundedRectangle: (Rectangle origin: ((i*11)@(i*11)) 
@@ -53,7 +60,7 @@ SqView >> drawBackground: aCanvas [
 					
 				aCanvas fill
 					path: (aCanvas shape 
-								roundedRectangle: (Rectangle origin: ((352-(i*11))@(i*11)) 
+								roundedRectangle: (Rectangle origin: ((330-(i*11))@(i*11)) 
 																	  extent: 10@10)
 								radii:(BlCornerRadii radius: 2) );
 					paint: (Color veryLightGray);
@@ -62,7 +69,7 @@ SqView >> drawBackground: aCanvas [
 
 			aCanvas fill
 				path: (aCanvas shape 
-							roundedRectangle: (Rectangle origin: ((15*11)@(15*11)) 
+							roundedRectangle: (Rectangle origin: ((14*11)@(14*11)) 
 																  extent: 32@32)
 							radii:(BlCornerRadii radius: 2) );
 				paint: (Color veryLightGray);
@@ -70,7 +77,7 @@ SqView >> drawBackground: aCanvas [
 	
 			aCanvas transform 
 				by: [ :aTransform | aTransform 
-					translateBy: (16*10+17)@20 ]
+					translateBy: (15*10+16)@9 ]
 				during: [ 
 					aCanvas text
 						font: aFont;
@@ -78,13 +85,22 @@ SqView >> drawBackground: aCanvas [
 					draw
 				]
 		].	
-		
+	
 	aCanvas transform pop
 ]
 
 { #category : #drawing }
 SqView >> drawOnSpartaCanvas: aCanvas [
 	canvas ifNil: [ canvas := aCanvas ].
+	
+	aCanvas fill
+		path: (aCanvas shape 
+					roundedRectangle: (Rectangle origin: 214@46 
+														 extent: 340@340)
+					radii: (BlCornerRadii radius: 0));
+		paint: (Color red);
+		draw.
+	
 	self drawBackground: aCanvas.
 	self drawShape: aCanvas.
 ]
@@ -98,17 +114,16 @@ SqView >> drawShape: aCanvas [
 
 	aCanvas transform 
 		by: [ :aTransform | aTransform
-			rotateByDegrees: 0;
-			translateBy: (-180)@(-180)]
+			rotateByDegrees: (state at: #levelRotation);
+			translateBy: (-170)@(-170)]
 		during: [  
 			
 			1 to: 4 do: [ :i |
 				| location point x y|
 				"self halt. "
-				point := (state at: #shape) atWrap: i.
-				location := (state at: #shapeLocation). 
-				x := location x * 11 + (point x * 11). 
-				y := location y * 11 + (point y * 11).
+				point := (state at: #shapeCoordinates) atWrap: i.
+				x := point x * 11. 
+				y := point y * 11.
 				aCanvas fill
 					path: (aCanvas shape 
 						roundedRectangle: (Rectangle origin: (x)@(y) 
