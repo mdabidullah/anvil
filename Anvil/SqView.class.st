@@ -141,3 +141,36 @@ SqView >> drawShape: aCanvas [
 	
 	aCanvas transform pop
 ]
+
+{ #category : #drawing }
+SqView >> drawShapeWithCoordinates: aCoordinateArray [ 
+	
+	canvas transform
+		translateBy: (384@216);
+		push.
+	
+	canvas transform 
+		by: [ :aTransform | aTransform
+			rotateByDegrees: (state at: #levelRotation);
+			translateBy: (-170)@(-170)]
+		during: [  
+			
+			
+			1 to: 4 do: [ :i |
+				| point x y|
+				"self halt. "
+				point := aCoordinateArray atWrap: i.
+				x := point x * 11. 
+				y := point y * 11.
+				canvas fill
+					path: (canvas shape 
+						roundedRectangle: (Rectangle origin: (x)@(y) 
+															  extent: 10@10)
+						radii:(BlCornerRadii radius: 2) );
+					paint: (Color red);
+					draw. ]
+			
+		].
+	
+	canvas transform pop.
+]

@@ -21,6 +21,8 @@ _______________
 
 #inDiagonal: a Boolean, states whether the shape is in Diagonal.
 
+#diagonalEntryDirection : a Symbol, representing the direction the shape entered the diagonal.
+
 #diagonalLocation: a Point, representing the location of the diagonal cell.
 
 #Level Related#
@@ -218,9 +220,10 @@ SqModel >> enterDiagonal: aDirection withCoordinates: aCoordinateArray [
 			]
 		]
 	].
-	self halt.
-	point := aCoordinateArray atWrap: index.
 	
+	point := aCoordinateArray atWrap: index.
+	self halt.
+	state at: #diagonalEntryDirection put: aDirection.
 	state at: #diagonalLocation put: point.
 	state at: #inDiagonal put: true.
 	self rotateLevel: (self diagonal: point).
@@ -238,11 +241,48 @@ SqModel >> event: aEvent [
 ]
 
 { #category : #diagonal }
-SqModel >> exitDiagonal [
-]
-
-{ #category : #diagonal }
 SqModel >> exitDiagonal: aDirection [
+	(state at: #diagonalEntryDirection) = aDirection ifTrue: [ 
+		"Diagonal is trying to reflect"	
+		| previousQuadrant currentDiagonal |
+		self halt.
+		previousQuadrant := self quadrant: (state at: #shapeLocation).
+		currentDiagonal := self diagonal: (state at: #diagonalLocation).
+		((currentDiagonal = #Up_Right and: [ 
+			previousQuadrant = #Up or: [ previousQuadrant = #Right ] ]) or: [ 
+			currentDiagonal = #Down_Left and: [ 
+				previousQuadrant = #Down or: previousQuadrant = #Left ] ]) ifTrue: [ 
+			"reflect over y = x"
+			| newCoordinates mX mY newShapeLocation |
+			newCoordinates := { 0@0. 0@0. 0@0. 0@0 }. 
+			
+			1 to: 4 do: [ :i |
+				| |
+				newCoordinates atWrap: i put: 
+					(((state at: #levelSize) - 1) - ((state atWrap: #shapeCoordinates) at: i) y)
+					@
+					(((state at: #levelSize) - 1) - ((state atWrap: #shapeCoordinates) at: i) x)
+			].
+			
+			mX := 31.
+			mY := 31.
+			
+			1 to: 4 do: [ :i |
+				mX := (newCoordinates atWrap: i) x min: mX.
+				mY := (newCoordinates atWrap: i) y min: mY.
+				"(newCoordinates atWrap: i) x < mX ifTrue: [ 
+					mX := (newCoordinates atWrap: i) x.
+				].
+				(newCoordinates atWrap: i) y < mY ifTrue: [ 
+					mY := (newCoordinates atWrap: i) y.
+				]"
+			].
+			
+			newShapeLocation := mX@mY.
+			
+			
+		]
+	]
 ]
 
 { #category : #utility }
@@ -692,7 +732,6 @@ SqModel >> startGame [
 	
 	self addNewShape.
 	
-	stateMachine changeStateTo: #ChooseQuadrant.
 ]
 
 { #category : #anvil }
@@ -732,5 +771,29 @@ SqModel >> translateAction: aDirection [
 			at: #Down put: #Right;
 			at: #Left put: #Down;
 			yourself);
+		at: #Up_Right put: (Dictionary new 
+			at: #Up put: #Up;
+			at: #Right put: #Right; 
+			at: #Down put: #Down;
+			at: #Left put: #Left;
+			yourself);
+		at: #Up_Left put: (Dictionary new 
+			at: #Up put: #Up;
+			at: #Right put: #Right; 
+			at: #Down put: #Down;
+			at: #Left put: #Left;
+			yourself);
+		at: #Down_Right put: (Dictionary new 
+			at: #Up put: #Up;
+			at: #Right put: #Right; 
+			at: #Down put: #Down;
+			at: #Left put: #Left;
+			yourself);
+		at: #Down_Left put: (Dictionary new 
+			at: #Up put: #Up;
+			at: #Right put: #Right; 
+			at: #Down put: #Down;
+			at: #Left put: #Left;
+			yourself);			
 		yourself) at: (state at: #levelOrientation)) at: aDirection
 ]

@@ -80,6 +80,7 @@ AnvilGame >> reInitializeModel [
 	"This function reinitializes the model"
 	state := nil.
 	state := AnvilState new.
+	model := nil.
 	model := SqModel new.
 	
 	model state: state.
