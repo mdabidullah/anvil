@@ -17,7 +17,7 @@ _______________
 
 #shapeLocation : a Point, representing the origin of the shape. 
 
-#shapeCoordinates : an Array, containing the cell coordinates the shape is occupying in the level.
+#shapeCoordinates : an Array, containing the cell coordinates the shape is occupying in the level, is zero-indexed.
 
 #inDiagonal: a Boolean, states whether the shape is in Diagonal.
 
@@ -103,7 +103,7 @@ SqModel >> acceptShape [
 		point := point + (1@1).
 		((state at: #level) includes: point) ifTrue: [ ^ false ]
 	].
-	self halt.
+	
 	self rotateLevel: (self quadrant: (state at: #shapeLocation)). 
 	^ true.
 	
@@ -202,10 +202,10 @@ SqModel >> diagonal: aPoint [
 SqModel >> enterDiagonal: aDirection withCoordinates: aCoordinateArray [
 	"Change state to InDiagonal and user the aCoordinateArray to find the lowest cell"
 	| point index |
-	self halt.
-	2 to: 4 do: [ :i |
+	
+	1 to: 4 do: [ :i |
 		| absPoint |
-		absPoint := (aCoordinateArray atWrap: i) abs. 
+		absPoint := (self globalToCentral: (aCoordinateArray atWrap: i)) abs. 
 		absPoint x = absPoint y ifTrue: [ 
 			point isNil ifTrue: [ 
 				point := absPoint.
@@ -218,11 +218,11 @@ SqModel >> enterDiagonal: aDirection withCoordinates: aCoordinateArray [
 			]
 		]
 	].
-	
+	self halt.
 	point := aCoordinateArray atWrap: index.
 	
 	state at: #diagonalLocation put: point.
-	
+	state at: #inDiagonal put: true.
 	self rotateLevel: (self diagonal: point).
 	
 	stateMachine changeStateTo: #InDiagonal.
@@ -420,7 +420,6 @@ SqModel >> manageCascade [
 SqModel >> move: aDirection [
 	| newCoordinates translatedDirection fallingDirection newLocation movePossible directionVector 
 	  currentQuadrant |
-	
 	Transcript show: 'move: '; show: aDirection; cr.
 	
 	"Check if this move is valid, the shape should not move up a ring or move out of the level"
@@ -432,7 +431,7 @@ SqModel >> move: aDirection [
 	1 to: 4 do: [ :i |
 		| newPoint|
 		newPoint := ((state at: #shapeCoordinates) atWrap: i) + directionVector.
-		(newPoint x > 0 and: [newPoint y > 0 and: [newPoint x <= (state at: #levelSize) and: [newPoint y <= (state at: #levelSize)]]])
+		(newPoint x >= 0 and: [newPoint y >= 0 and: [newPoint x <= (state at: #levelSize) and: [newPoint y <= (state at: #levelSize)]]])
 			ifFalse: [ ^ self ]. 
 		newCoordinates atWrap: i put: newPoint
 		].
@@ -489,9 +488,9 @@ SqModel >> orientationRotation: aQuadrant [
 		at: #Down put: -180;
 		at: #Left put: -270;
 		at: #Up_Right put: -45;
-		at: #Up_Left put: -135;
-		at: #Down_Right put: -225;
-		at: #Down_Left put: -315;
+		at: #Up_Left put: -315;
+		at: #Down_Right put: -135;
+		at: #Down_Left put: -225;
 		yourself) at: aQuadrant.
 ]
 

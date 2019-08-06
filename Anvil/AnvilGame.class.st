@@ -78,6 +78,7 @@ AnvilGame >> model [
 AnvilGame >> reInitializeModel [
 	self flag: 'UNTESTED'.
 	"This function reinitializes the model"
+	state := nil.
 	state := AnvilState new.
 	model := SqModel new.
 	
@@ -86,6 +87,8 @@ AnvilGame >> reInitializeModel [
 		
 	window root addEventHandler: (AnvilEventListener new 
 												model: model).
+												
+	self restartWindow.
 	
 ]
 
