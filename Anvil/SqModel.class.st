@@ -19,6 +19,10 @@ _______________
 
 #shapeCoordinates : an Array, containing the cell coordinates the shape is occupying in the level.
 
+#inDiagonal: a Boolean, states whether the shape is in Diagonal.
+
+#diagonalLocation: a Point, representing the location of the diagonal cell.
+
 #Level Related#
 _______________
 
@@ -88,6 +92,24 @@ SqModel class >> ZShape [
 ]
 
 { #category : #'add shape' }
+SqModel >> acceptShape [
+	Transcript show: 'Accepted Shape'; cr.
+	
+	"Check if the shape collides with placed cells, if so game over. Return either true or false."
+	1 to: 4 do: [ :i |
+		| point |
+		point := (state at: #shapeCoordinates) atWrap: i.
+		"#shapeCoordinates is zero-indexed, #level is one-indexed"
+		point := point + (1@1).
+		((state at: #level) includes: point) ifTrue: [ ^ false ]
+	].
+	self halt.
+	self rotateLevel: (self quadrant: (state at: #shapeLocation)). 
+	^ true.
+	
+]
+
+{ #category : #'add shape' }
 SqModel >> addNewShape [
 	| shapeSymbol |
 	"shapeSymbol := self getShapeFromBag."
@@ -103,9 +125,15 @@ SqModel >> addNewShape [
 
 { #category : #'add shape' }
 SqModel >> canAcceptShape [
-	"Check if the shape collides with placed cells, if so game over. Return either true or false. If true rotate level to match"
-	self flag: 'TODO'.
-	Transcript show: 'Accept Shape'; cr.
+	"Check if the shape collides with placed cells, if so game over. Return either true or false."
+	1 to: 4 do: [ :i |
+		| point |
+		point := (state at: #shapeCoordinates) atWrap: i.
+		"#shapeCoordinates is zero-indexed, #level is one-indexed"
+		point := point + (1@1).
+		((state at: #level) includes: point) ifTrue: [ ^ false ]
+	].
+	
 	^ true.
 ]
 
@@ -131,6 +159,15 @@ SqModel >> changeQuadrant: aQuadrant [
 ]
 
 { #category : #move }
+SqModel >> changeShapeLocation: aPoint [ 
+	state at: #shapeLocation put: aPoint.
+		
+	state at: #shapeCoordinates put: (self getActiveShapeCellCoordinates).
+	
+	state stateChanged.
+]
+
+{ #category : #move }
 SqModel >> changeShapeLocation: aPoint withCoordinates: aCoordinateArray [
 	state at: #shapeLocation put: aPoint.
 		
@@ -147,15 +184,61 @@ SqModel >> checkForRing [
 SqModel >> checkForRings [
 ]
 
+{ #category : #utility }
+SqModel >> diagonal: aPoint [
+	| centralPoint |
+	centralPoint := self globalToCentral: aPoint.
+	
+	(centralPoint x > 0 and: [ centralPoint y > 0 ]) ifTrue: [ ^ #Up_Right ].
+	
+	(centralPoint x < 0 and: [ centralPoint y > 0 ]) ifTrue: [ ^ #Up_Left ].
+	
+	(centralPoint x > 0 and: [ centralPoint y < 0 ]) ifTrue: [ ^ #Down_Right ].
+	
+	(centralPoint x < 0 and: [ centralPoint y < 0 ]) ifTrue: [ ^ #Down_Left ].
+]
+
 { #category : #diagonal }
-SqModel >> enterDiagonal: aDirection [
-	self flag: 'TODO'.
+SqModel >> enterDiagonal: aDirection withCoordinates: aCoordinateArray [
+	"Change state to InDiagonal and user the aCoordinateArray to find the lowest cell"
+	| point index |
+	self halt.
+	2 to: 4 do: [ :i |
+		| absPoint |
+		absPoint := (aCoordinateArray atWrap: i) abs. 
+		absPoint x = absPoint y ifTrue: [ 
+			point isNil ifTrue: [ 
+				point := absPoint.
+				index := i.
+			] ifFalse: [ 
+				absPoint < point ifTrue: [ 
+					point := absPoint.
+					index := i.
+				]
+			]
+		]
+	].
+	
+	point := aCoordinateArray atWrap: index.
+	
+	state at: #diagonalLocation put: point.
+	
+	self rotateLevel: (self diagonal: point).
+	
+	stateMachine changeStateTo: #InDiagonal.
+	
+	
+	
 ]
 
 { #category : #anvil }
 SqModel >> event: aEvent [
 
 	stateMachine handleEvent: aEvent.
+]
+
+{ #category : #diagonal }
+SqModel >> exitDiagonal [
 ]
 
 { #category : #diagonal }
@@ -266,6 +349,8 @@ SqModel >> initializeState [
 	state at: #shapeBag put: (self getShapeBag).
 	state at: #shapeLocation put: nil.
 	state at: #shapeCoordinates put: nil.
+	state at: #inDiagonal put: false.
+	state at: #diagonalLocation put: nil.
 	"Level"
 	state at: #levelSize put: 31. 
 	state at: #offset put: 20@10.
@@ -294,7 +379,7 @@ SqModel >> initializeStateMachine [
 
 	stateMachine 
 		setDecisionFrom: #AcceptShape 
-		if: [ self canAcceptShape ] 
+		if: [ self acceptShape ] 
 		trueTo: #InQuadrant
 		falseTo: #GameOver.
 
@@ -312,6 +397,11 @@ SqModel >> initializeStateMachine [
 		when: #Left do: [ self move: #Left ] to: #InQuadrant;
 		when: #Space do: [ self rotate ] to: #InQuadrant.
 
+	(stateMachine stateAt: #InDiagonal)
+		when: #Down do: [ self moveDownDiagonal  ] to: #InDiagonal;
+		when: #Right do: [ self exitDiagonal: #Right ] to: #InQuadrant;
+		when: #Left do: [ self exitDiagonal: #Left ] to: #InQuadrant.
+		
 	stateMachine setStartStateTo: #ChooseQuadrant.
 ]
 
@@ -360,7 +450,7 @@ SqModel >> move: aDirection [
 			translatedDirection = fallingDirection 
 				ifFalse: [ 
 					Transcript show: 'Trying to move into a diagonal'; cr.
-					self enterDiagonal: translatedDirection. ]
+					self enterDiagonal: translatedDirection withCoordinates: newCoordinates. ]
 				ifTrue: [ 
 					Transcript show: 'Dropping onto a diagonal'.
 					self stopShape.
@@ -395,9 +485,13 @@ SqModel >> orientationRotation: aQuadrant [
 	"Return the degree of the orientation"
 	^ (Dictionary new
 		at: #Up put: 0;
-		at: #Right put: 90;
-		at: #Down put: 180;
-		at: #Left put: 270;
+		at: #Right put: -90;
+		at: #Down put: -180;
+		at: #Left put: -270;
+		at: #Up_Right put: -45;
+		at: #Up_Left put: -135;
+		at: #Down_Right put: -225;
+		at: #Down_Left put: -315;
 		yourself) at: aQuadrant.
 ]
 
@@ -532,7 +626,6 @@ SqModel >> rotate: aDegree ": Integer, multiples of  90" shape: aShape [ ": the 
 { #category : #level }
 SqModel >> rotateLevel: aQuadrant [
 	"rotate the level so that aQuadrant is top"
-	self flag: 'TODO'.
 	state at: #levelOrientation put: aQuadrant.
 	state at: #levelRotation put: (self orientationRotation: aQuadrant).
 	state stateChanged.

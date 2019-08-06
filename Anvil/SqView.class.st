@@ -93,14 +93,6 @@ SqView >> drawBackground: aCanvas [
 SqView >> drawOnSpartaCanvas: aCanvas [
 	canvas ifNil: [ canvas := aCanvas ].
 	
-	aCanvas fill
-		path: (aCanvas shape 
-					roundedRectangle: (Rectangle origin: 214@46 
-														 extent: 340@340)
-					radii: (BlCornerRadii radius: 0));
-		paint: (Color red);
-		draw.
-	
 	self drawBackground: aCanvas.
 	self drawShape: aCanvas.
 ]
@@ -108,18 +100,30 @@ SqView >> drawOnSpartaCanvas: aCanvas [
 { #category : #drawing }
 SqView >> drawShape: aCanvas [ 
 	(state at: #shape) ifNil: [ ^ self ].
+	
 	aCanvas transform
 		translateBy: (384@216);
 		push.
-
+	
 	aCanvas transform 
 		by: [ :aTransform | aTransform
 			rotateByDegrees: (state at: #levelRotation);
 			translateBy: (-170)@(-170)]
 		during: [  
-			
-			1 to: 4 do: [ :i |
-				| location point x y|
+			(state at: #inDiagonal) ifTrue: [ 
+				| x y |
+				x := (state at: #diagonalLocation) x * 11.
+				y := (state at: #diagonalLocation) y * 11.
+				aCanvas fill
+					path: (aCanvas shape 
+						roundedRectangle: (Rectangle origin: (x)@(y) 
+															  extent: 10@10)
+						radii:(BlCornerRadii radius: 2) );
+					paint: (Color darkGray);
+					draw. 
+			] ifFalse: [ 
+				1 to: 4 do: [ :i |
+				| point x y|
 				"self halt. "
 				point := (state at: #shapeCoordinates) atWrap: i.
 				x := point x * 11. 
@@ -131,6 +135,8 @@ SqView >> drawShape: aCanvas [
 						radii:(BlCornerRadii radius: 2) );
 					paint: (Color darkGray);
 					draw. ]
+			].
+			
 		].
 	
 	aCanvas transform pop
