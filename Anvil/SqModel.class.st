@@ -125,20 +125,6 @@ SqModel >> addNewShape [
 	state at: #shapeCoordinates put: (self getActiveShapeCellCoordinates).
 ]
 
-{ #category : #'add shape' }
-SqModel >> canAcceptShape [
-	"Check if the shape collides with placed cells, if so game over. Return either true or false."
-	1 to: 4 do: [ :i |
-		| point |
-		point := (state at: #shapeCoordinates) atWrap: i.
-		"#shapeCoordinates is zero-indexed, #level is one-indexed"
-		point := point + (1@1).
-		((state at: #level) includes: point) ifTrue: [ ^ false ]
-	].
-	
-	^ true.
-]
-
 { #category : #utility }
 SqModel >> centralToGlobal: aPoint [
 	| o origin |
@@ -158,6 +144,17 @@ SqModel >> changeQuadrant: aQuadrant [
 	state at: #shapeCoordinates put: (self getActiveShapeCellCoordinates).
 	state stateChanged.
 	
+]
+
+{ #category : #rotate }
+SqModel >> changeShape: aShape withLocation: aPoint [
+	state at: #shape put: aShape.
+	
+	state at: #shapeLocation put: aPoint.
+		
+	state at: #shapeCoordinates put: (self getActiveShapeCellCoordinates).
+	
+	state stateChanged.
 ]
 
 { #category : #move }
@@ -222,7 +219,7 @@ SqModel >> enterDiagonal: aDirection withCoordinates: aCoordinateArray [
 	].
 	
 	point := aCoordinateArray atWrap: index.
-	self halt.
+	
 	state at: #diagonalEntryDirection put: aDirection.
 	state at: #diagonalLocation put: point.
 	state at: #inDiagonal put: true.
@@ -245,6 +242,7 @@ SqModel >> exitDiagonal: aDirection [
 	(state at: #diagonalEntryDirection) = aDirection ifTrue: [ 
 		"Diagonal is trying to reflect"	
 		| previousQuadrant currentDiagonal |
+		self flag: 'TODO'.
 		self halt.
 		previousQuadrant := self quadrant: (state at: #shapeLocation).
 		currentDiagonal := self diagonal: (state at: #diagonalLocation).
@@ -259,27 +257,26 @@ SqModel >> exitDiagonal: aDirection [
 			1 to: 4 do: [ :i |
 				| |
 				newCoordinates atWrap: i put: 
-					(((state at: #levelSize) - 1) - ((state atWrap: #shapeCoordinates) at: i) y)
+					(((state at: #levelSize) - 1) - ((state at: #shapeCoordinates) at: i) y)
 					@
-					(((state at: #levelSize) - 1) - ((state atWrap: #shapeCoordinates) at: i) x)
+					(((state at: #levelSize) - 1) - ((state at: #shapeCoordinates) at: i) x)
 			].
 			
-			mX := 31.
+			"mX := 31.
 			mY := 31.
 			
 			1 to: 4 do: [ :i |
 				mX := (newCoordinates atWrap: i) x min: mX.
 				mY := (newCoordinates atWrap: i) y min: mY.
-				"(newCoordinates atWrap: i) x < mX ifTrue: [ 
-					mX := (newCoordinates atWrap: i) x.
-				].
-				(newCoordinates atWrap: i) y < mY ifTrue: [ 
-					mY := (newCoordinates atWrap: i) y.
-				]"
 			].
 			
-			newShapeLocation := mX@mY.
+			newShapeLocation := mX@mY."
+			newShapeLocation := 
+				(((state at: #levelSize) - 1) - (state at: #shapeLocation) y)
+				@
+				(((state at: #levelSize) - 1) - (state at: #shapeLocation) x). 
 			
+			state
 			
 		]
 	]
@@ -353,6 +350,19 @@ SqModel >> getShapeFromBag [
 	^ shape.
 ]
 
+{ #category : #level }
+SqModel >> getShapeGlobalCoordinates: aShape location: aPoint [
+	"Returns the coordinates of the cells the shape is currently occupying in global coordinates"
+	| array |
+	array := { 0@0. 0@0. 0@0. 0@0 }.
+	1 to: 4 do: [ :i |
+		| |
+		array at: i put: aPoint + (aShape atWrap: i).
+		 ].
+	
+	^ array.
+]
+
 { #category : #'add shape' }
 SqModel >> getShapeStartingLocation: aShapeSymbol forQuadrant: aQuadrant [
 	"Provides the starting location in global coordinates"
@@ -413,6 +423,7 @@ SqModel >> initializeStateMachine [
 	stateMachine addStateNamed: #ChooseQuadrant. 
 	stateMachine addStateNamed: #AcceptShape. 
 	stateMachine addStateNamed: #InQuadrant.
+	stateMachine addStateNamed: #Moving.
 	stateMachine addStateNamed: #InDiagonal. 
 	stateMachine addStateNamed: #Landed.
 	stateMachine addStateNamed: #GameOver.
@@ -431,11 +442,17 @@ SqModel >> initializeStateMachine [
 		when: #Right do: [ self changeQuadrant: #Right ] to: #ChooseQuadrant.
 		
 	(stateMachine stateAt: #InQuadrant)
-		when: #Up do: [ self move: #Up ] to: #InQuadrant;
-		when: #Down do: [ self move: #Down ] to: #InQuadrant;
-		when: #Right do: [ self move: #Right ] to: #InQuadrant;
-		when: #Left do: [ self move: #Left ] to: #InQuadrant;
+		when: #Up do: [ self move: #Up ] to: #Moving;
+		when: #Down do: [ self move: #Down ] to: #Moving;
+		when: #Right do: [ self move: #Right ] to: #Moving;
+		when: #Left do: [ self move: #Left ] to: #Moving;
 		when: #Space do: [ self rotate ] to: #InQuadrant.
+
+	stateMachine 
+		setDecisionFrom: #Moving 
+		if: [ self isInDiagonal ] 
+		trueTo: #InDiagonal
+		falseTo: #InQuadrant.
 
 	(stateMachine stateAt: #InDiagonal)
 		when: #Down do: [ self moveDownDiagonal  ] to: #InDiagonal;
@@ -443,6 +460,11 @@ SqModel >> initializeStateMachine [
 		when: #Left do: [ self exitDiagonal: #Left ] to: #InQuadrant.
 		
 	stateMachine setStartStateTo: #ChooseQuadrant.
+]
+
+{ #category : #shape }
+SqModel >> isInDiagonal [
+	^ state at: #inDiagonal
 ]
 
 { #category : #level }
@@ -513,10 +535,53 @@ SqModel >> move: aDirection [
 
 { #category : #diagonal }
 SqModel >> moveDownDiagonal [
-]
+	| diagonal |
+	self flag: 'Deal with landing when at the bottom'.
+	diagonal := self diagonal: (state at: #diagonalLocation).
+	
+	diagonal = #Up_Right ifTrue: [ 
+		| newPoint |
+		
+		newPoint := (state at: #diagonalLocation) + ((-1)@1).
+		(self quadrant: newPoint) = #Center ifFalse: [ 
+			state at: #diagonalLocation put: newPoint.
+			state stateChanged.
+		].
+		^ self.
+	].
 
-{ #category : #diagonal }
-SqModel >> moveInDiagonal: aDirection [
+	diagonal = #Up_Left ifTrue: [ 
+		| newPoint |
+		
+		newPoint := (state at: #diagonalLocation) + (1@1).
+		(self quadrant: newPoint) = #Center ifFalse: [ 
+			state at: #diagonalLocation put: newPoint.
+			state stateChanged.
+		].
+		^ self.
+	].
+
+	diagonal = #Down_Right ifTrue: [ 
+		| newPoint |
+		
+		newPoint := (state at: #diagonalLocation) + ((-1)@(-1)).
+		(self quadrant: newPoint) = #Center ifFalse: [ 
+			state at: #diagonalLocation put: newPoint.
+			state stateChanged.
+		].
+		^ self.
+	].
+
+	diagonal = #Down_Left ifTrue: [ 
+		| newPoint |
+		
+		newPoint := (state at: #diagonalLocation) + (1@(-1)).
+		(self quadrant: newPoint) = #Center ifFalse: [ 
+			state at: #diagonalLocation put: newPoint.
+			state stateChanged.
+		].
+		^ self.
+	].
 ]
 
 { #category : #level }
@@ -611,6 +676,17 @@ SqModel >> restartGame [
 
 { #category : #rotate }
 SqModel >> rotate [
+	| newShape |
+	self flag: 'TODO'.
+	newShape := self rotationPossible: (state at: #shapeLocation).
+	
+	newShape ifNotNil: [ :shape |
+		self changeShape: shape withLocation: (state at: #shapeLocation).
+		^ self.
+	] ifNil: [ 
+	
+	]
+	
 ]
 
 { #category : #rotate }
@@ -724,6 +800,28 @@ SqModel >> rotateShape: aShapeSymbol forQuadrant: aQuadrant [
 
 { #category : #rotate }
 SqModel >> rotationPossible [
+]
+
+{ #category : #rotate }
+SqModel >> rotationPossible: aPoint [
+	| shape shapeCoordinates |
+	
+	shape := self rotate: 90.
+	
+	shapeCoordinates := self getShapeGlobalCoordinates: shape location: (state at: #shapeLocation).
+	
+	1 to: 4 do: [ :i |
+		| point |
+		point := shapeCoordinates atWrap: i.
+		((self isOccupied: point) 
+			or: [ (self quadrant: point) = #Quadrant 
+			or: [ (self quadrant: point) = #Center] ]) ifTrue: [ 
+			^ nil.
+		]. 		
+	].
+
+	^ shape.
+	
 ]
 
 { #category : #initialization }
