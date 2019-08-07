@@ -7,6 +7,26 @@ Class {
 	#category : #'Anvil-SquareSquare'
 }
 
+{ #category : #'as yet unclassified' }
+SqView class >> backgroundColour [
+	^ Color veryVeryLightGray
+]
+
+{ #category : #'as yet unclassified' }
+SqView class >> diagonalColour [
+	^ Color veryLightGray.
+]
+
+{ #category : #'as yet unclassified' }
+SqView class >> placedCellColour [
+	^ Color darkGray.
+]
+
+{ #category : #'as yet unclassified' }
+SqView class >> shapeColour [
+	^ Color darkGray
+]
+
 { #category : #accessing }
 SqView >> canvas [ 
 	^ canvas.
@@ -25,19 +45,13 @@ SqView >> drawBackground: aCanvas [
 		translateBy: (384@216);
 		push.
 
-	"draw level background"
 	aCanvas transform 
 		by: [ :aTransform | aTransform
 			rotateByDegrees: (state at: #levelRotation);
 			translateBy: (-170)@(-170)]
 		during: [ 
-			aCanvas fill
-						path: (aCanvas shape 
-									roundedRectangle: (Rectangle origin: 0@0 
-																		 extent: 10@10)
-						   			radii:(BlCornerRadii radius: 2) );
-						paint: (Color blue);
-						draw.
+			"draw level background"
+			
 			0 to: ((state at: #levelSize) - 1) do: [ :x |
 				0 to: ((state at: #levelSize) - 1) do: [ :y | 
 					aCanvas fill
@@ -45,17 +59,18 @@ SqView >> drawBackground: aCanvas [
 									roundedRectangle: (Rectangle origin: ((x*11)@(y*11)) 
 																		 extent: 10@10)
 						   			radii:(BlCornerRadii radius: 2) );
-						paint: (Color veryVeryLightGray);
+						paint: (self class backgroundColour);
 						draw.
-				] 
+				]. 
 			].
+		
 			0 to: ((state at: #levelSize) - 1) do: [ :i | 
 				aCanvas fill
 					path: (aCanvas shape 
 								roundedRectangle: (Rectangle origin: ((i*11)@(i*11)) 
 																	 extent: 10@10)
 								radii:(BlCornerRadii radius: 2) );
-					paint: (Color veryLightGray);
+					paint: (self class diagonalColour);
 					draw.
 					
 				aCanvas fill
@@ -63,7 +78,7 @@ SqView >> drawBackground: aCanvas [
 								roundedRectangle: (Rectangle origin: ((330-(i*11))@(i*11)) 
 																	  extent: 10@10)
 								radii:(BlCornerRadii radius: 2) );
-					paint: (Color veryLightGray);
+					paint: (self class diagonalColour);
 					draw.
 			].
 
@@ -72,18 +87,34 @@ SqView >> drawBackground: aCanvas [
 							roundedRectangle: (Rectangle origin: ((14*11)@(14*11)) 
 																  extent: 32@32)
 							radii:(BlCornerRadii radius: 2) );
-				paint: (Color veryLightGray);
+				paint: (self class diagonalColour);
 				draw.
-	
+			
+			"Draw placed cells, #level is one indexed"
+			1 to: (state at: #levelSize) do: [ :x |
+				1 to: (state at: #levelSize) do: [ :y |
+					((state at: #level) at: x at: y) ifNotNil: [ 
+						aCanvas fill
+							path: (aCanvas shape 
+										roundedRectangle: (Rectangle origin: (((x-1)*11)@((y-1)*11)) 
+																			 extent: 10@10)
+							   			radii:(BlCornerRadii radius: 2) );
+							paint: (self class placedCellColour);
+							draw.
+					].
+				].
+			].
+			
 			aCanvas transform 
 				by: [ :aTransform | aTransform 
-					translateBy: (15*10+16)@9 ]
+					translateBy: (15*10+16)@9 
+				]
 				during: [ 
 					aCanvas text
 						font: aFont;
 						string: 'U';
 					draw
-				]
+				].
 		].	
 	
 	aCanvas transform pop
@@ -119,7 +150,7 @@ SqView >> drawShape: aCanvas [
 						roundedRectangle: (Rectangle origin: (x)@(y) 
 															  extent: 10@10)
 						radii:(BlCornerRadii radius: 2) );
-					paint: (Color darkGray);
+					paint: (self class shapeColour);
 					draw. 
 			] ifFalse: [ 
 				1 to: 4 do: [ :i |

@@ -225,7 +225,6 @@ SqModel >> enterDiagonal: aDirection withCoordinates: aCoordinateArray [
 	state at: #inDiagonal put: true.
 	self rotateLevel: (self diagonal: point).
 	
-	stateMachine changeStateTo: #InDiagonal.
 	
 	
 	
@@ -350,7 +349,7 @@ SqModel >> getShapeFromBag [
 	^ shape.
 ]
 
-{ #category : #level }
+{ #category : #utility }
 SqModel >> getShapeGlobalCoordinates: aShape location: aPoint [
 	"Returns the coordinates of the cells the shape is currently occupying in global coordinates"
 	| array |
@@ -469,9 +468,8 @@ SqModel >> isInDiagonal [
 
 { #category : #level }
 SqModel >> isOccupied: aPoint [
-	"Answer if this point is occupied in the level"
-	self flag: 'TODO'.
-	^ false.
+	"Answer if this point is occupied in the level, #level is one indexed, aPoint is zero indexed"
+	^ ((state at: #level) at: (aPoint x + 1) at: (aPoint y + 1)) isNotNil.
 ]
 
 { #category : #ring }
@@ -480,7 +478,7 @@ SqModel >> manageCascade [
 
 { #category : #move }
 SqModel >> move: aDirection [
-	| newCoordinates translatedDirection fallingDirection newLocation movePossible directionVector 
+	| newCoordinates translatedDirection fallingDirection newLocation directionVector 
 	  currentQuadrant |
 	Transcript show: 'move: '; show: aDirection; cr.
 	
@@ -498,7 +496,6 @@ SqModel >> move: aDirection [
 		newCoordinates atWrap: i put: newPoint
 		].
 	
-	movePossible := true.
 	currentQuadrant := self quadrant: ((state at: #shapeCoordinates) atWrap: 1). 
 	newLocation := (state at: #shapeLocation) + directionVector.
 	fallingDirection := self fallingDirection: currentQuadrant.
@@ -684,8 +681,31 @@ SqModel >> rotate [
 		self changeShape: shape withLocation: (state at: #shapeLocation).
 		^ self.
 	] ifNil: [ 
-	
-	]
+		"retry rotation with offset right"
+		newShape := self rotationPossible: 
+			((self getDirectionVector: (self translateAction: #Right)) + state at: #shapeLocation).
+		
+		newShape ifNotNil: [ :shape |
+			self changeShape: shape 
+				  withLocation: ((self getDirectionVector: 
+							(self translateAction: #Right)) + state at: #shapeLocation).
+			^ self.
+		] ifNil: [ 
+			"retry rotation with offset left"
+			newShape := self rotationPossible: 
+			((self getDirectionVector: (self translateAction: #Left)) + state at: #shapeLocation).
+			
+			newShape ifNotNil: [ :shape |
+				self changeShape: shape 
+					  withLocation: ((self getDirectionVector: 
+								(self translateAction: #Left)) + state at: #shapeLocation).
+				^ self.
+			] ifNil: [
+				Transcript show: 'Cannot rotate'.
+			].
+			
+		].
+	].
 	
 ]
 
@@ -699,7 +719,7 @@ SqModel >> rotate: aDegree [ ": Integer, multiples of  90"
 		1 to: 4 do: [ :i |
 			| point newPoint |
 			point := (state at: #shape) atWrap: i.
-			newPoint := point y negate @ point x.
+			newPoint := point y negated @ point x.
 			shape atWrap: i put: newPoint.
 			].
 		degree := aDegree - 90.
@@ -799,10 +819,6 @@ SqModel >> rotateShape: aShapeSymbol forQuadrant: aQuadrant [
 ]
 
 { #category : #rotate }
-SqModel >> rotationPossible [
-]
-
-{ #category : #rotate }
 SqModel >> rotationPossible: aPoint [
 	| shape shapeCoordinates |
 	
@@ -839,7 +855,17 @@ SqModel >> step [
 
 { #category : #shape }
 SqModel >> stopShape [
-	self flag: 'TODO'.
+	"update level, #level is one indexed, #shapeCoordinates is zero indexed"
+	1 to: 4 do: [ :i |
+		| point |
+		point := (state at: #shapeCoordinates) atWrap: i. 
+		(state at: #level) at: (point x + 1) at: (point y + 1) put: 1. 
+	].
+
+	"restart state machine"
+	stateMachine changeStateTo: #ChooseQuadrant.
+	
+	
 ]
 
 { #category : #utility }
