@@ -30,8 +30,6 @@ _______________
 
 #levelSize : a Number, 
 
-#offset : a Number, which is the drawing point of the level.
-
 #levelOrientation : a Symbol, that keeps track of the orientation of the cell.
 
 #levelRotation : a Number that keeps track of the rotation of the cell. 
@@ -116,6 +114,9 @@ SqModel >> addNewShape [
 	| shapeSymbol |
 	"shapeSymbol := self getShapeFromBag."
 	shapeSymbol := #Z.
+	self halt.
+	stateMachine changeStateTo: #ChooseQuadrant.
+	
 	state at: #shape put: (self rotateShape: shapeSymbol 
 										forQuadrant: (state at: #levelOrientation)).
 	state at: #shapeType put: shapeSymbol.
@@ -123,6 +124,8 @@ SqModel >> addNewShape [
 		(self getShapeStartingLocation: shapeSymbol forQuadrant: (state at: #levelOrientation)).
 		
 	state at: #shapeCoordinates put: (self getActiveShapeCellCoordinates).
+	
+	state stateChanged.
 ]
 
 { #category : #utility }
@@ -401,8 +404,7 @@ SqModel >> initializeState [
 	state at: #inDiagonal put: false.
 	state at: #diagonalLocation put: nil.
 	"Level"
-	state at: #levelSize put: 31. 
-	state at: #offset put: 20@10.
+	state at: #levelSize put: 31.
 	state at: #levelOrientation put: #Up.
 	state at: #levelRotation put: 0.
 	state at: #level put: (Array2D rows: (state at: #levelSize)
@@ -481,7 +483,6 @@ SqModel >> move: aDirection [
 	| newCoordinates translatedDirection fallingDirection newLocation directionVector 
 	  currentQuadrant |
 	Transcript show: 'move: '; show: aDirection; cr.
-	
 	"Check if this move is valid, the shape should not move up a ring or move out of the level"
 	(aDirection == #Up) ifTrue: [ ^ self ].
 	newCoordinates := { 0@0. 0@0. 0@0. 0@0. }.
@@ -495,7 +496,6 @@ SqModel >> move: aDirection [
 			ifFalse: [ ^ self ]. 
 		newCoordinates atWrap: i put: newPoint
 		].
-	
 	currentQuadrant := self quadrant: ((state at: #shapeCoordinates) atWrap: 1). 
 	newLocation := (state at: #shapeLocation) + directionVector.
 	fallingDirection := self fallingDirection: currentQuadrant.
@@ -522,10 +522,10 @@ SqModel >> move: aDirection [
 				^ self.
 			].
 		].
-		
-		"It must be possible to move"
-		self changeShapeLocation: newLocation withCoordinates: newCoordinates.
 	].
+
+	"It must be possible to move"
+		self changeShapeLocation: newLocation withCoordinates: newCoordinates.
 	
 	
 ]
@@ -856,16 +856,15 @@ SqModel >> step [
 { #category : #shape }
 SqModel >> stopShape [
 	"update level, #level is one indexed, #shapeCoordinates is zero indexed"
+	Transcript show: 'shape dropped'.
+	
 	1 to: 4 do: [ :i |
 		| point |
 		point := (state at: #shapeCoordinates) atWrap: i. 
 		(state at: #level) at: (point x + 1) at: (point y + 1) put: 1. 
 	].
-
-	"restart state machine"
-	stateMachine changeStateTo: #ChooseQuadrant.
 	
-	
+	self addNewShape.	
 ]
 
 { #category : #utility }
