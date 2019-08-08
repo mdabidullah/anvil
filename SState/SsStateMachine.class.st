@@ -176,6 +176,17 @@ SsStateMachine >> setStartStateTo: aStateSymbol [
 ]
 
 { #category : #actions }
+SsStateMachine >> setSwitchFrom: stateId action: aBlockOrMessageSend [
+	| state switch switchId |
+	state := self stateAt: stateId.
+	state isAuto: true.
+	switchId := stateId, '_switch'.
+	state when: #'_ended' fire: switchId.
+	switch := (SsSwitch switch: aBlockOrMessageSend).
+	self transAt: switchId put: switch.
+]
+
+{ #category : #actions }
 SsStateMachine >> start [
 	self reset.
 	self currentState enter.
