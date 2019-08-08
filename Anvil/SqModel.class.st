@@ -116,7 +116,7 @@ SqModel >> addNewShape [
 	| shapeSymbol |
 	
 	"shapeSymbol := self getShapeFromBag."
-	shapeSymbol := #Z.
+	shapeSymbol := #S.
 	
 	stateMachine changeStateTo: #ChooseQuadrant.
 	
@@ -267,7 +267,7 @@ SqModel >> exitDiagonal: aDirection [
 			1 to: 4 do: [ :i |
 				| point |
 				point := (state at: #shape) atWrap: i.
-				newShape atWrap: i put: (point y) @ (point x).
+				newShape atWrap: i put: (point y - 1) @ (point x).
 			].
 		
 			newShapeLocation := 
